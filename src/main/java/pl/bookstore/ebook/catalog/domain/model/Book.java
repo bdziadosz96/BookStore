@@ -10,8 +10,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 public class Book {
-  Long id;
-  String title;
-  String author;
-  Integer year;
+  private Long id;
+  private String title;
+  private String author;
+  private Integer year;
 }
