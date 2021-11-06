@@ -1,6 +1,6 @@
 package pl.bookstore.ebook.catalog.app.service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.domain.model.Book;
@@ -10,13 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+public
 class CatalogService implements CatalogUseCase {
-  private final CatalogRepository catalogRepository;
-
-  public CatalogService(
-      @Qualifier("bestsellerCatalogRepository") CatalogRepository catalogRepository) {
-    this.catalogRepository = catalogRepository;
-  }
+  @Autowired private CatalogRepository catalogRepository;
 
   @Override
   public List<Book> findByTitle(String title) {
@@ -34,7 +30,7 @@ class CatalogService implements CatalogUseCase {
 
   @Override
   public List<Book> findAll() {
-    return null;
+    return catalogRepository.findAll();
   }
 
   @Override
@@ -43,7 +39,10 @@ class CatalogService implements CatalogUseCase {
   }
 
   @Override
-  public void addBook() {}
+  public void addBook(CommandCreateBook commandCreateBook) {
+    Book book = new Book(commandCreateBook.title(), commandCreateBook.author(), commandCreateBook.year());
+    catalogRepository.save(book);
+  }
 
   @Override
   public void removeById(Long id) {}

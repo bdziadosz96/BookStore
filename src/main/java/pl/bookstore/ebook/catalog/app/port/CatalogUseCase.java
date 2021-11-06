@@ -6,15 +6,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CatalogUseCase {
-    List<Book> findByTitle(String title);
+  List<Book> findByTitle(String title);
 
-    List<Book> findByAuthor(String author);
+  List<Book> findByAuthor(String author);
 
-    List<Book> findAll();
+  List<Book> findAll();
 
-    Optional<Book> findOneByAuthorAndTitle(String author, String title);
+  Optional<Book> findOneByAuthorAndTitle(String author, String title);
 
-    void addBook();
+  void addBook(CommandCreateBook commandCreateBook);
 
-    void removeById(Long id);
+  void removeById(Long id);
+
+  record CommandCreateBook(String title, String author, Integer year){}
 }

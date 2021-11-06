@@ -5,5 +5,7 @@ import pl.bookstore.ebook.catalog.domain.model.Book;
 import java.util.List;
 
 public interface CatalogRepository {
-  public List<Book> findAll();
+  List<Book> findAll();
+
+  void save(Book book);
 }
