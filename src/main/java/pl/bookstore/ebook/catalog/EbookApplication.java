@@ -1,4 +1,4 @@
-package pl.bookstore.ebook;
+package pl.bookstore.ebook.catalog;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -16,7 +16,7 @@ class BestsellerCatalogRepository implements CatalogRepository {
   public BestsellerCatalogRepository() {
     storage.put(1L, new Book(1L, "Think in Java", "Robert O Brain", 2020));
     storage.put(2L, new Book(2L, "Python for beginners", "Kasper Velgert", 2011));
-    storage.put(3L, new Book(3L, "Spring in Action", "Joshua Bloch", 2018));
+    storage.put(3L, new Book(3L, "Effective Java", "Joshua Bloch", 2018));
     storage.put(4L, new Book(4L, "Clean Code", "Uncle Bob", 2013));
   }
 
