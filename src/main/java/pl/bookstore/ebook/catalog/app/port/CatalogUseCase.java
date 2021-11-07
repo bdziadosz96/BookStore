@@ -1,9 +1,12 @@
 package pl.bookstore.ebook.catalog.app.port;
 
+import lombok.Builder;
+import lombok.Value;
 import pl.bookstore.ebook.catalog.domain.model.Book;
 
 import java.util.List;
 import java.util.Optional;
+
 
 public interface CatalogUseCase {
   List<Book> findAll();
@@ -23,7 +26,14 @@ public interface CatalogUseCase {
   record CommandCreateBook(String title, String author, Integer year) {
   }
 
-  record CommandUpdateBook(Long id, String title, String author, Integer year) {
+  @Value
+  @Builder
+  class CommandUpdateBook {
+    Long id;
+    String title;
+    String author;
+    Integer year;
+
     public Book updateFields(Book book) {
       if (title != null) {
           book.setTitle(title);

@@ -52,7 +52,7 @@ class CatalogService implements CatalogUseCase {
   @Override
   public UpdateBookResponse updateBook(CommandUpdateBook commandUpdateBook) {
     return catalogRepository
-        .findById(commandUpdateBook.id())
+        .findById(commandUpdateBook.getId())
         .map(
             book -> {
               final Book updatedBook = commandUpdateBook.updateFields(book);
@@ -62,7 +62,7 @@ class CatalogService implements CatalogUseCase {
         .orElseGet(
             () ->
                 new UpdateBookResponse(
-                    false, List.of("Nie znaleziono książki o id " + commandUpdateBook.id())));
+                    false, List.of("Nie znaleziono książki o id " + commandUpdateBook.getId())));
   }
 
   @Override

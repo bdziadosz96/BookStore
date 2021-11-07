@@ -58,11 +58,10 @@ class ApplicationStartup implements CommandLineRunner {
             book -> {
               final UpdateBookResponse updateBookResponse =
                   catalog.updateBook(
-                      new CommandUpdateBook(
-                          book.getId(),
-                          "Think in Java version 8.0 after update",
-                          book.getAuthor(),
-                          book.getYear()));
+                      CommandUpdateBook.builder()
+                          .id(book.getId())
+                          .title("Think in Java release 8.0 2021")
+                          .build());
               System.out.println("Updating book result is: " + updateBookResponse.success());
             });
   }
