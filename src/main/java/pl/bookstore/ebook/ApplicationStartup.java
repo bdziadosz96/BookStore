@@ -19,7 +19,7 @@ class ApplicationStartup implements CommandLineRunner {
   private final String author;
 
   public ApplicationStartup(
-          CatalogUseCase catalog,
+      CatalogUseCase catalog,
       @Value("${pl.bookstore.query.title:default}") String title,
       @Value("${pl.bookstore.limit:3}") Long limit,
       @Value("${pl.bookstore.query.author:default}") String author) {
@@ -32,11 +32,9 @@ class ApplicationStartup implements CommandLineRunner {
   @Override
   public void run(final String... args) throws Exception {
     initData();
-    catalog.addBook(new CommandCreateBook("Title","Author", 1923));
-    catalog.addBook(new CommandCreateBook("Harry Potter","JK Rowling", 1923));
-    final List<Book> author = catalog.findByAuthor("Author");
     findData();
-    System.out.println(author);
+    findAndUpdate();
+    findData();
   }
 
   private void initData() {
@@ -47,12 +45,25 @@ class ApplicationStartup implements CommandLineRunner {
   }
 
   private void findData() {
-    System.out.println("Find by author " + author);
-    List<Book> booksByAuthor = catalog.findByAuthor(author).stream().limit(limit).toList();
-    booksByAuthor.forEach(System.out::println);
-
     System.out.println("Find by title " + title);
     List<Book> booksByTitle = catalog.findByTitle(title).stream().limit(limit).toList();
     booksByTitle.forEach(System.out::println);
+  }
+
+  private void findAndUpdate() {
+    System.out.println("Updating book...");
+    catalog
+        .findOneByAuthorAndTitle("Robert O Brain", "Think in Java")
+        .ifPresent(
+            book -> {
+              final UpdateBookResponse updateBookResponse =
+                  catalog.updateBook(
+                      new CommandUpdateBook(
+                          book.getId(),
+                          "Think in Java version 8.0 after update",
+                          book.getAuthor(),
+                          book.getYear()));
+              System.out.println("Updating book result is: " + updateBookResponse.success());
+            });
   }
 }
