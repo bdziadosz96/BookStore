@@ -1,0 +1,4 @@
+CLTR+F12 -> pokazuje co aktualnie sie buduje w klasie
+SPACJA + CTRL -> sugerowanie wartości które można wstrzyknąć
+CTRL (SHIFT) + STRZALKA -> LEPSZE ZAZNACZANIE
+CTRL + Y -> kasuje rekord

@@ -23,6 +23,11 @@ class CatalogService implements CatalogUseCase {
   }
 
   @Override
+  public Optional<Book> findOneByTitle(String title) {
+    return findByTitle(title).stream().findFirst();
+  }
+
+  @Override
   public List<Book> findByAuthor(String author) {
     return catalogRepository.findAll().stream()
         .filter(book -> book.getAuthor().startsWith(author))
@@ -43,26 +48,25 @@ class CatalogService implements CatalogUseCase {
   }
 
   @Override
-  public void addBook(CommandCreateBook commandCreateBook) {
-    Book book =
-        new Book(commandCreateBook.title(), commandCreateBook.author(), commandCreateBook.year());
+  public void addBook(CreateBookCommand createBookCommand) {
+    Book book = createBookCommand.toBook();
     catalogRepository.save(book);
   }
 
   @Override
-  public UpdateBookResponse updateBook(CommandUpdateBook commandUpdateBook) {
+  public UpdateBookResponse updateBook(UpdateBookCommand updateBookCommand) {
     return catalogRepository
-        .findById(commandUpdateBook.getId())
+        .findById(updateBookCommand.getId())
         .map(
             book -> {
-              final Book updatedBook = commandUpdateBook.updateFields(book);
+              final Book updatedBook = updateBookCommand.updateFields(book);
               catalogRepository.save(updatedBook);
               return new UpdateBookResponse(true, Collections.emptyList());
             })
         .orElseGet(
             () ->
                 new UpdateBookResponse(
-                    false, List.of("Nie znaleziono książki o id " + commandUpdateBook.getId())));
+                    false, List.of("Nie znaleziono książki o id " + updateBookCommand.getId())));
   }
 
   @Override

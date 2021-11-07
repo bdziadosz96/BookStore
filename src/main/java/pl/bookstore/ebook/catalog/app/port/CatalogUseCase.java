@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import pl.bookstore.ebook.catalog.domain.model.Book;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,26 +14,32 @@ public interface CatalogUseCase {
 
   List<Book> findByTitle(String title);
 
+  Optional<Book> findOneByTitle(String title);
+
   List<Book> findByAuthor(String author);
 
   Optional<Book> findOneByAuthorAndTitle(String author, String title);
 
-  void addBook(CommandCreateBook commandCreateBook);
+  void addBook(CreateBookCommand createBookCommand);
 
-  UpdateBookResponse updateBook(CommandUpdateBook commandUpdateBook);
+  UpdateBookResponse updateBook(UpdateBookCommand updateBookCommand);
 
   void removeById(Long id);
 
-  record CommandCreateBook(String title, String author, Integer year) {
+  record CreateBookCommand(String title, String author, Integer year, BigDecimal price) {
+    public Book toBook() {
+      return new Book(title,author,year,price);
+    }
   }
 
   @Value
   @Builder
-  class CommandUpdateBook {
+  class UpdateBookCommand {
     Long id;
     String title;
     String author;
     Integer year;
+    BigDecimal price;
 
     public Book updateFields(Book book) {
       if (title != null) {
@@ -43,6 +50,9 @@ public interface CatalogUseCase {
       }
       if (year != null) {
         book.setYear(year);
+      }
+      if (price != null) {
+        book.setYear(price.intValue());
       }
       return book;
     }
