@@ -2,7 +2,6 @@ package pl.bookstore.ebook.order.domain;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Value;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

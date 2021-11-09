@@ -1,6 +1,4 @@
-package pl.bookstore.ebook.catalog.domain.repository;
-
-import pl.bookstore.ebook.catalog.domain.model.Book;
+package pl.bookstore.ebook.catalog.domain;
 
 import java.util.List;
 import java.util.Optional;

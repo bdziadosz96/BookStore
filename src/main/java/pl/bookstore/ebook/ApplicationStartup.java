@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
-import pl.bookstore.ebook.catalog.domain.model.Book;
+import pl.bookstore.ebook.catalog.domain.Book;
 import pl.bookstore.ebook.order.app.port.PlaceOrderUseCase;
 import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.domain.OrderItem;

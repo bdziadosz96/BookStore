@@ -14,7 +14,10 @@ class PlaceOrderService implements PlaceOrderUseCase {
   @Override
   public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
     final Order order =
-        Order.builder().items(command.getItems()).recipient(command.getRecipient()).build();
+        Order.builder()
+                .items(command.getItems())
+                .recipient(command.getRecipient())
+                .build();
     Order save = repository.save(order);
     return PlaceOrderResponse.success(save.getId());
   }

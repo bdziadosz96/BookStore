@@ -2,7 +2,7 @@ package pl.bookstore.ebook.catalog.app.port;
 
 import lombok.Builder;
 import lombok.Value;
-import pl.bookstore.ebook.catalog.domain.model.Book;
+import pl.bookstore.ebook.catalog.domain.Book;
 
 import java.math.BigDecimal;
 import java.util.List;

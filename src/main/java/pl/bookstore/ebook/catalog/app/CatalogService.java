@@ -1,10 +1,10 @@
-package pl.bookstore.ebook.catalog.app.service;
+package pl.bookstore.ebook.catalog.app;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
-import pl.bookstore.ebook.catalog.domain.model.Book;
-import pl.bookstore.ebook.catalog.domain.repository.CatalogRepository;
+import pl.bookstore.ebook.catalog.domain.Book;
+import pl.bookstore.ebook.catalog.domain.CatalogRepository;
 
 import java.util.Collections;
 import java.util.List;

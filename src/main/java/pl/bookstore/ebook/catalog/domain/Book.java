@@ -1,4 +1,4 @@
-package pl.bookstore.ebook.catalog.domain.model;
+package pl.bookstore.ebook.catalog.domain;
 
 import lombok.*;
 

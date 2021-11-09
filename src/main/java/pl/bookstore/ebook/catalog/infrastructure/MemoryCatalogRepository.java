@@ -8,8 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Repository;
-import pl.bookstore.ebook.catalog.domain.model.Book;
-import pl.bookstore.ebook.catalog.domain.repository.CatalogRepository;
+import pl.bookstore.ebook.catalog.domain.Book;
+import pl.bookstore.ebook.catalog.domain.CatalogRepository;
 
 @Repository
 class MemoryCatalogRepository implements CatalogRepository {
