@@ -13,10 +13,11 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework:spring-web:5.3.12'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter:2.5.6'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.5.6'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
