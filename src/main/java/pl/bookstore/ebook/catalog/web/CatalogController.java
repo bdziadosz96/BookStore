@@ -8,18 +8,17 @@ import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.domain.Book;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/order")
 @AllArgsConstructor
 class CatalogController {
-    private CatalogUseCase catalog;
+    private final CatalogUseCase catalog;
 
-    @GetMapping
+    @GetMapping(params = {"title"})
     @ResponseStatus(HttpStatus.OK)
-    private List<Book> getAll() {
-        return catalog.findAll();
+    private List<Book> getAll(@RequestParam String title) {
+        return catalog.findByTitle(title);
     }
 
     @GetMapping("/{id}")

@@ -42,7 +42,7 @@ class ApplicationStartup implements CommandLineRunner {
   }
 
   @Override
-  public void run(final String... args) throws Exception {
+  public void run(final String... args) {
     initData();
     searchCatalog();
     placeOrder();
@@ -81,15 +81,15 @@ class ApplicationStartup implements CommandLineRunner {
     queryOrder
         .findAll()
         .forEach(
-            order -> {
-              System.out.println(
-                  "GOT ORDER WITH TOTAL PRICE: " + order.totalPrice() + " DETAILS " + order);
-            });
+            order -> System.out.println(
+                "GOT ORDER WITH TOTAL PRICE: " + order.totalPrice() + " DETAILS " + order));
   }
 
   private void initData() {
     catalog.addBook(
-        new CreateBookCommand("Think in Java", "Robert O Brain", 2020, new BigDecimal("20.2")));
+        new CreateBookCommand("Java", "Robert O Brain", 2020, new BigDecimal("20.2")));
+    catalog.addBook(
+        new CreateBookCommand("Java - Streams and lambda's", "Robert O Brain", 2021, new BigDecimal("39.90")));
     catalog.addBook(
         new CreateBookCommand("Python for beginners", "Kasper Velgert", 2011, new BigDecimal(14)));
     catalog.addBook(
@@ -107,14 +107,14 @@ class ApplicationStartup implements CommandLineRunner {
   private void findAndUpdate() {
     System.out.println("Updating book...");
     catalog
-        .findOneByAuthorAndTitle("Robert O Brain", "Think in Java")
+        .findOneByAuthorAndTitle("Robert O Brain", "Java")
         .ifPresent(
             book -> {
               final UpdateBookResponse updateBookResponse =
                   catalog.updateBook(
                       UpdateBookCommand.builder()
                           .id(book.getId())
-                          .title("Think in Java release 8.0 2021")
+                          .title("Java release 8.0 2021")
                           .build());
               System.out.println("Updating book result is: " + updateBookResponse.success());
             });

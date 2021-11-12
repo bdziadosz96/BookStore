@@ -15,13 +15,13 @@ public interface PlaceOrderUseCase {
 
   @Value
   @Builder
-  public class PlaceOrderCommand {
+  class PlaceOrderCommand {
     @Singular List<OrderItem> items;
     Recipient recipient;
   }
 
   @Value
-  public class PlaceOrderResponse {
+  class PlaceOrderResponse {
     boolean succes;
     Long orderId;
     List<String> errors;
