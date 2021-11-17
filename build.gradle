@@ -32,6 +32,6 @@ test {
 
 spotless {
     java {
-        target'src/*/java/**/*.java'
+        target'src/main/java/pl/bookstore/ebook/**/*.java'
     }
 }
