@@ -1,6 +1,8 @@
 package pl.bookstore.ebook.catalog.web;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,12 +10,16 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.domain.Book;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.*;
+import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.CreateBookCommand;
 
 @RestController
 @RequestMapping("/catalog")
@@ -43,7 +49,7 @@ class CatalogController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<Void> addBook(@RequestBody RestCreateBookCommand command) {
+  public ResponseEntity<Void> addBook(@Valid @RequestBody RestCreateBookCommand command) {
     final Book book = catalog.addBook(command.toCommand());
     final URI uri = createdBookURI(book);
     return ResponseEntity.created(uri).build();
@@ -56,12 +62,24 @@ class CatalogController {
   }
 
   private URI createdBookURI(Book book) {
-    return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
+    return ServletUriComponentsBuilder.fromCurrentRequestUri()
+        .path("/" + book.getId().toString())
+        .build()
+        .toUri();
   }
 
-  record RestCreateBookCommand(String title, String author, Integer year, BigDecimal price) {
-      CreateBookCommand toCommand() {
-          return new CreateBookCommand(title,author,year,price);
-      }
+  @Data
+  private static class RestCreateBookCommand {
+    @DecimalMin("0.01")
+    @NotNull
+    BigDecimal price;
+
+    @NotBlank private String title;
+    @NotBlank private String author;
+    @NotNull private Integer year;
+
+    CreateBookCommand toCommand() {
+      return new CreateBookCommand(title, author, year, price);
+    }
   }
 }
