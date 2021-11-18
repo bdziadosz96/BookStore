@@ -1,7 +1,9 @@
 package pl.bookstore.ebook.catalog.app.port;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
 import pl.bookstore.ebook.catalog.domain.Book;
 
 import java.math.BigDecimal;
@@ -40,6 +42,7 @@ public interface CatalogUseCase {
 
   @Value
   @Builder
+  @AllArgsConstructor
   class UpdateBookCommand {
     Long id;
     String title;
@@ -48,17 +51,17 @@ public interface CatalogUseCase {
     BigDecimal price;
 
     public Book updateFields(Book book) {
-      if (title != null) {
+      if (StringUtils.isNotBlank(title)) {
           book.setTitle(title);
       }
-      if (author != null) {
+      if (StringUtils.isNotBlank(author)) {
         book.setAuthor(author);
       }
       if (year != null) {
         book.setYear(year);
       }
       if (price != null) {
-        book.setYear(price.intValue());
+        book.setPrice(BigDecimal.valueOf(price.longValue()));
       }
       return book;
     }
