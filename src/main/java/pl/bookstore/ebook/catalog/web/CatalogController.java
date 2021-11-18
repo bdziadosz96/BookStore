@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
@@ -16,8 +17,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.net.URI;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.CreateBookCommand;
 
@@ -70,13 +70,18 @@ class CatalogController {
 
   @Data
   private static class RestCreateBookCommand {
-    @DecimalMin("0.01")
-    @NotNull
+    @DecimalMin(value = "0.01", message = "Price cannot be lower than 0.01")
+    @NotNull(message = "Please provide correct price")
     BigDecimal price;
 
-    @NotBlank private String title;
-    @NotBlank private String author;
-    @NotNull private Integer year;
+    @NotBlank(message = "title cannot be blank")
+    private String title;
+
+    @NotBlank(message = "author cannot be blank")
+    private String author;
+
+    @NotNull(message = "year cannot be null")
+    private Integer year;
 
     CreateBookCommand toCommand() {
       return new CreateBookCommand(title, author, year, price);
