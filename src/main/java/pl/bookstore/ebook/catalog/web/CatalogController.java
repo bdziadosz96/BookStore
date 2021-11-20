@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
@@ -14,6 +15,7 @@ import pl.bookstore.ebook.catalog.domain.Book;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
@@ -50,7 +52,7 @@ class CatalogController {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<Void> addBook(
-          @Validated(CreateValidation.class) @RequestBody CatalogController.RestBookCommand command) {
+      @Validated(CreateValidation.class) @RequestBody CatalogController.RestBookCommand command) {
     final Book book = catalog.addBook(command.toCreateCommand());
     final URI uri = createdBookURI(book);
     return ResponseEntity.created(uri).build();
@@ -72,6 +74,20 @@ class CatalogController {
       final String message = String.join(", ", response.errors());
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
     }
+  }
+
+  @PutMapping("/{id}/cover")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public void addBookCover(@PathVariable Long id, @RequestParam("file") MultipartFile file)
+      throws IOException {
+    System.out.println(
+        "Updated book with following cover: "
+            + file.getOriginalFilename()
+            + " KB "
+            + file.getSize());
+    catalog.updateBookCover(
+        new UpdateBookCoverCommand(
+            id, file.getBytes(), file.getContentType(), file.getOriginalFilename()));
   }
 
   private URI createdBookURI(Book book) {

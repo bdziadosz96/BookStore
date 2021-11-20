@@ -34,6 +34,10 @@ public interface CatalogUseCase {
 
   void removeById(Long id);
 
+  void updateBookCover(UpdateBookCoverCommand command);
+
+  record UpdateBookCoverCommand(Long id, byte[] file, String contentType, String fileName) {}
+
   record CreateBookCommand(String title, String author, Integer year, BigDecimal price) {
     public Book toBook() {
       return new Book(title,author,year,price);

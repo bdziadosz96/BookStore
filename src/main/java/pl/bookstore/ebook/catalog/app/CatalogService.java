@@ -95,4 +95,13 @@ class CatalogService implements CatalogUseCase {
   public void removeById(Long id) {
     catalogRepository.removeById(id);
   }
+
+  @Override
+  public void updateBookCover(UpdateBookCoverCommand command) {
+    System.out.println("Received cover command " + command.fileName() + "bytes: " + command.file().length);
+//    catalogRepository.findById(command.id())
+//            .ifPresent(book -> {
+//              book.setCoverId(command.id());
+//            });
+  }
 }
