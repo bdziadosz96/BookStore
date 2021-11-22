@@ -80,11 +80,6 @@ class CatalogController {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public void addBookCover(@PathVariable Long id, @RequestParam("file") MultipartFile file)
       throws IOException {
-    System.out.println(
-        "Updated book with following cover: "
-            + file.getOriginalFilename()
-            + " KB "
-            + file.getSize());
     catalog.updateBookCover(
         new UpdateBookCoverCommand(
             id, file.getBytes(), file.getContentType(), file.getOriginalFilename()));

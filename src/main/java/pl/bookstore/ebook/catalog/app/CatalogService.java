@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.domain.Book;
 import pl.bookstore.ebook.catalog.domain.CatalogRepository;
+import pl.bookstore.ebook.uploads.app.port.UploadUseCase;
+import pl.bookstore.ebook.uploads.app.port.UploadUseCase.SaveUploadCommand;
+import pl.bookstore.ebook.uploads.domain.Upload;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.Optional;
 @AllArgsConstructor
 class CatalogService implements CatalogUseCase {
   private final CatalogRepository catalogRepository;
+  private final UploadUseCase upload;
 
   @Override
   public Optional<Book> findById(Long id) {
@@ -98,10 +102,14 @@ class CatalogService implements CatalogUseCase {
 
   @Override
   public void updateBookCover(UpdateBookCoverCommand command) {
-    System.out.println("Received cover command " + command.fileName() + "bytes: " + command.file().length);
-//    catalogRepository.findById(command.id())
-//            .ifPresent(book -> {
-//              book.setCoverId(command.id());
-//            });
+    catalogRepository
+        .findById(command.id())
+        .ifPresent(
+            book -> {
+             final Upload savedUpload = upload.save(new SaveUploadCommand(
+                          command.fileName(), command.file(), command.contentType()));
+              book.setCoverId(savedUpload.getId());
+              catalogRepository.save(book);
+            });
   }
 }
