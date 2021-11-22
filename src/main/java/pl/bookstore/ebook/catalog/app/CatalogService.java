@@ -106,7 +106,9 @@ class CatalogService implements CatalogUseCase {
         .findById(command.id())
         .ifPresent(
             book -> {
-             final Upload savedUpload = upload.save(new SaveUploadCommand(
+              final Upload savedUpload =
+                  upload.save(
+                      new SaveUploadCommand(
                           command.fileName(), command.file(), command.contentType()));
               book.setCoverId(savedUpload.getId());
               catalogRepository.save(book);

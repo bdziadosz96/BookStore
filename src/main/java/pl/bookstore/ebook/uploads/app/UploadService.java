@@ -6,7 +6,10 @@ import pl.bookstore.ebook.uploads.app.port.UploadUseCase;
 import pl.bookstore.ebook.uploads.domain.Upload;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -22,5 +25,15 @@ class UploadService implements UploadUseCase {
     storage.put(upload.getId(), upload);
     System.out.println("Upload saved " + upload.getFilename() + " with id: " + newId);
     return upload;
+  }
+
+  @Override
+  public Optional<Upload> getById(String id) {
+    return Optional.ofNullable(storage.get(id));
+  }
+
+  @Override
+  public List<Upload> getAll() {
+    return new ArrayList<>(storage.values());
   }
 }
