@@ -1,6 +1,10 @@
 package pl.bookstore.ebook.uploads.web;
 
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +38,23 @@ class UploadController {
             })
         .orElse(ResponseEntity.notFound().build());
   }
+
+    @GetMapping("/{id}/file")
+    public ResponseEntity<Resource> getUploadFile(@PathVariable String id) {
+    return upload
+        .getById(id)
+        .map(
+            file -> {
+              String contentDisposition = "attachment; filename=\"" + file.getFilename() + "\"";
+              final byte[] bytes = file.getFile();
+              Resource resource = new ByteArrayResource(bytes);
+              return ResponseEntity.ok()
+                  .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                  .contentType(MediaType.parseMediaType(file.getContentType()))
+                  .body(resource);
+            })
+        .orElse(ResponseEntity.notFound().build());
+    }
 
   @GetMapping
   public List<UploadResponse> getAll() {

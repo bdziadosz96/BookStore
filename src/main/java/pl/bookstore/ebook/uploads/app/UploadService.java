@@ -18,7 +18,7 @@ class UploadService implements UploadUseCase {
 
   @Override
   public Upload save(SaveUploadCommand command) {
-    final String newId = RandomStringUtils.randomAlphanumeric(8);
+    final String newId = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
     Upload upload =
         new Upload(
             newId, command.file(), command.contentType(), command.filename(), LocalDateTime.now());
