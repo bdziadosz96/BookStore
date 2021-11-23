@@ -12,5 +12,7 @@ public interface UploadUseCase {
 
     List<Upload> getAll();
 
+    void removeById(String id);
+
     record SaveUploadCommand(String filename, byte[] file, String contentType) {}
 }

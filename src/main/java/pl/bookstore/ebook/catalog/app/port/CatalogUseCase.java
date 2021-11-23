@@ -12,6 +12,7 @@ import java.util.Optional;
 
 
 public interface CatalogUseCase {
+
   List<Book> findAll();
 
   List<Book> findByTitle(String title);
@@ -36,6 +37,8 @@ public interface CatalogUseCase {
 
   void updateBookCover(UpdateBookCoverCommand command);
 
+  void removeBookCover(Long id);
+
   record UpdateBookCoverCommand(Long id, byte[] file, String contentType, String fileName) {}
 
   record CreateBookCommand(String title, String author, Integer year, BigDecimal price) {
@@ -43,6 +46,8 @@ public interface CatalogUseCase {
       return new Book(title,author,year,price);
     }
   }
+
+  record UpdateBookResponse(boolean success, List<String> errors) {}
 
   @Value
   @Builder
@@ -71,5 +76,5 @@ public interface CatalogUseCase {
     }
   }
 
-  record UpdateBookResponse(boolean success, List<String> errors) {}
+
 }

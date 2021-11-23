@@ -36,4 +36,9 @@ class UploadService implements UploadUseCase {
   public List<Upload> getAll() {
     return new ArrayList<>(storage.values());
   }
+
+  @Override
+  public void removeById(String id) {
+    storage.remove(id);
+  }
 }
