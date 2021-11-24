@@ -15,10 +15,4 @@ public class Order {
   private Recipient recipient;
   @Builder.Default private OrderStatus status = OrderStatus.NEW;
   private LocalDateTime createdAt;
-
-  public BigDecimal totalPrice() {
-    return items.stream()
-        .map(item -> item.getBook().getPrice().multiply(new BigDecimal(item.getQuantity())))
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
-  }
 }

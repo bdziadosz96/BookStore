@@ -5,7 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.domain.Book;
-import pl.bookstore.ebook.order.app.port.PlaceOrderUseCase;
+import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
 import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.domain.OrderItem;
 import pl.bookstore.ebook.order.domain.Recipient;
@@ -14,13 +14,13 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.*;
-import static pl.bookstore.ebook.order.app.port.PlaceOrderUseCase.*;
+import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.*;
 
 @Component
 class ApplicationStartup implements CommandLineRunner {
 
   private final CatalogUseCase catalog;
-  private final PlaceOrderUseCase placeOrder;
+  private final ManageOrderUseCase manageOrder;
   private final QueryOrderUseCase queryOrder;
   private final String title;
   private final Long limit;
@@ -28,13 +28,13 @@ class ApplicationStartup implements CommandLineRunner {
 
   public ApplicationStartup(
       CatalogUseCase catalog,
-      PlaceOrderUseCase placeOrder,
+      ManageOrderUseCase placeOrder,
       QueryOrderUseCase queryOrder,
       @Value("${pl.bookstore.query.title:default}") String title,
       @Value("${pl.bookstore.limit:3}") Long limit,
       @Value("${pl.bookstore.query.author:default}") String author) {
     this.catalog = catalog;
-    this.placeOrder = placeOrder;
+    this.manageOrder = placeOrder;
     this.queryOrder = queryOrder;
     this.title = title;
     this.limit = limit;
@@ -71,11 +71,11 @@ class ApplicationStartup implements CommandLineRunner {
     PlaceOrderCommand command =
         PlaceOrderCommand.builder()
             .recipient(recipient)
-            .item(new OrderItem(bookFromString, 16))
-            .item(new OrderItem(bookFromValue, 7))
+            .item(new OrderItem(bookFromString.getId(), 16))
+            .item(new OrderItem(bookFromValue.getId(), 7))
             .build();
 
-    final PlaceOrderResponse response = placeOrder.placeOrder(command);
+    final PlaceOrderResponse response = manageOrder.placeOrder(command);
     System.out.println("Created ORDER with ID " + response.getOrderId());
 
     queryOrder
@@ -83,7 +83,7 @@ class ApplicationStartup implements CommandLineRunner {
         .forEach(
             order ->
                 System.out.println(
-                    "GOT ORDER WITH TOTAL PRICE: " + order.totalPrice() + " DETAILS " + order));
+                    "GOT ORDER WITH TOTAL PRICE: " + " DETAILS " + order));
   }
 
   private void initData() {

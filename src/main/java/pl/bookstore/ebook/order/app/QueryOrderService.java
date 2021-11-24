@@ -7,6 +7,7 @@ import pl.bookstore.ebook.order.domain.Order;
 import pl.bookstore.ebook.order.domain.OrderRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -16,5 +17,10 @@ class QueryOrderService implements QueryOrderUseCase {
   @Override
   public List<Order> findAll() {
     return repository.findAll();
+  }
+
+  @Override
+  public Optional<Order> findById(Long id) {
+    return repository.findById(id);
   }
 }

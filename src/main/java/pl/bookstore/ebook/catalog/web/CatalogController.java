@@ -53,7 +53,7 @@ class CatalogController {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<Void> addBook(
-      @Validated(CreateValidation.class) @RequestBody CatalogController.RestBookCommand command) {
+      @Validated(CreateValidation.class) @RequestBody RestBookCommand command) {
     final Book book = catalog.addBook(command.toCreateCommand());
     final URI uri = createdBookURI(book);
     return ResponseEntity.created(uri).build();

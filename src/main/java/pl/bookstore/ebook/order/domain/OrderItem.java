@@ -5,6 +5,6 @@ import pl.bookstore.ebook.catalog.domain.Book;
 
 @Value
 public class OrderItem {
-  Book book;
+  Long bookId;
   int quantity;
 }
