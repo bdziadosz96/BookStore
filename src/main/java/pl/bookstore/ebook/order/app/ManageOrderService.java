@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
 import pl.bookstore.ebook.order.domain.Order;
 import pl.bookstore.ebook.order.domain.OrderRepository;
+import pl.bookstore.ebook.order.domain.OrderStatus;
 
 @Service
 @AllArgsConstructor
@@ -14,16 +15,24 @@ class ManageOrderService implements ManageOrderUseCase {
   @Override
   public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
     final Order order =
-        Order.builder()
-                .items(command.getItems())
-                .recipient(command.getRecipient())
-                .build();
+        Order.builder().items(command.getItems()).recipient(command.getRecipient()).build();
     Order save = repository.save(order);
     return PlaceOrderResponse.success(save.getId());
   }
 
   @Override
-  public UpdateOrderStatusResponse updateOrderStatus(UpdateOrderStatusCommand command) {
-    command.
+  public void deleteOrderById(Long id) {
+    repository.removeById(id);
+  }
+
+  @Override
+  public void updateOrderStatus(Long id, OrderStatus status) {
+    repository
+        .findById(id)
+        .ifPresent(
+            order -> {
+              order.setStatus(status);
+              repository.save(order);
+            });
   }
 }

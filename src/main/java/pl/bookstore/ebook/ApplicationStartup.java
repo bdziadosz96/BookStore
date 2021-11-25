@@ -83,7 +83,7 @@ class ApplicationStartup implements CommandLineRunner {
         .forEach(
             order ->
                 System.out.println(
-                    "GOT ORDER WITH TOTAL PRICE: " + " DETAILS " + order));
+                    "GOT ORDER WITH TOTAL PRICE: " + order.totalPrice() + " DETAILS " + order));
   }
 
   private void initData() {

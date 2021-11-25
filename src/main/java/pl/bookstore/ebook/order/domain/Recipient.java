@@ -1,9 +1,10 @@
 package pl.bookstore.ebook.order.domain;
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Recipient {
   String name;

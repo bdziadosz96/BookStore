@@ -1,5 +1,6 @@
 package pl.bookstore.ebook.order.app.port;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
@@ -14,10 +15,13 @@ import java.util.List;
 public interface ManageOrderUseCase {
   PlaceOrderResponse placeOrder(PlaceOrderCommand command);
 
-  UpdateOrderStatusResponse updateOrderStatus(UpdateOrderStatusCommand command);
+  void deleteOrderById(Long id);
+
+  void updateOrderStatus(Long id, OrderStatus status);
 
   @Value
   @Builder
+  @AllArgsConstructor
   class PlaceOrderCommand {
     @Singular List<OrderItem> items;
     Recipient recipient;
@@ -26,7 +30,7 @@ public interface ManageOrderUseCase {
   @Value
   class UpdateOrderStatusCommand {
     Long id;
-    String status;
+    OrderStatus status;
   }
 
   @Value

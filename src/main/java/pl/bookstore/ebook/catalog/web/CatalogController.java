@@ -93,10 +93,7 @@ class CatalogController {
   }
 
   private URI createdBookURI(Book book) {
-    return ServletUriComponentsBuilder.fromCurrentRequestUri()
-        .path("/" + book.getId().toString())
-        .build()
-        .toUri();
+    return new CreatedURI("/" + book.getId().toString()).uri();
   }
 
   interface UpdateValidation {}
