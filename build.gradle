@@ -15,19 +15,27 @@ repositories {
 
 
 dependencies {
+    //SPRING
     implementation 'org.springframework.boot:spring-boot-starter:2.5.6'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.5.6'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
-    compileOnly 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'org.hibernate.validator:hibernate-validator:6.0.18.Final'
-    implementation 'javax.validation:validation-api:2.0.1.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.5.6'
     implementation 'org.springdoc:springdoc-openapi-ui:1.5.12'
 
-    //for test
+    //DB
+    implementation 'org.postgresql:postgresql:42.3.1'
+    implementation 'org.hibernate.validator:hibernate-validator:6.0.18.Final'
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+
+    //LOMBOK
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
     testCompileOnly 'org.projectlombok:lombok:1.18.22'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    //COMMONS
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    
 }
 
 test {
