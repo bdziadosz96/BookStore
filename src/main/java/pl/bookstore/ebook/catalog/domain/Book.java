@@ -1,12 +1,13 @@
 package pl.bookstore.ebook.catalog.domain;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @ToString
 @NoArgsConstructor
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Book {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,6 +25,10 @@ public class Book {
   private Integer year;
   private BigDecimal price;
   private String coverId;
+  @CreatedDate
+  private LocalDateTime createdAt;
+  @LastModifiedDate
+  private LocalDateTime updatedAt;
 
   public Book(String title, String author, Integer year, BigDecimal price) {
     this.title = title;

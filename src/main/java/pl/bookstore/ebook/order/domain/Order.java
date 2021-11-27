@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -18,6 +21,7 @@ import static javax.persistence.EnumType.STRING;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "orders")
+@EntityListeners(AuditingEntityListener.class)
 public class Order {
   @Id
   @GeneratedValue
@@ -29,6 +33,9 @@ public class Order {
   @Builder.Default
   @Enumerated(STRING)
   private OrderStatus status = OrderStatus.NEW;
+  @CreatedDate
   private LocalDateTime createdAt;
+  @LastModifiedDate
+  private LocalDateTime updatedAt;
 }
 
