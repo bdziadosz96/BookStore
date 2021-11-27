@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static javax.persistence.EnumType.STRING;
+
 @Data
 @Builder
 @Entity
@@ -24,7 +26,9 @@ public class Order {
   @JoinColumn(name = "order_id")
   private List<OrderItem> items;
   private transient Recipient recipient;
-  @Builder.Default private OrderStatus status = OrderStatus.NEW;
+  @Builder.Default
+  @Enumerated(STRING)
+  private OrderStatus status = OrderStatus.NEW;
   private LocalDateTime createdAt;
 }
 
