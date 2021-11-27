@@ -19,7 +19,7 @@ public interface QueryOrderUseCase {
     class OrderDto {
         Long id;
         OrderStatus status;
-        List<RichOrderItem> items;
+        List<OrderItemDto> items;
         Recipient recipient;
         LocalDateTime createdAt;
 
@@ -31,7 +31,7 @@ public interface QueryOrderUseCase {
     }
 
     @Value
-    class RichOrderItem {
+    class OrderItemDto {
         Book book;
         int quantity;
     }

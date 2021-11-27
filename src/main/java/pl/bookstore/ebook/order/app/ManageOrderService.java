@@ -3,14 +3,14 @@ package pl.bookstore.ebook.order.app;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
+import pl.bookstore.ebook.order.db.OrderJpaRepository;
 import pl.bookstore.ebook.order.domain.Order;
-import pl.bookstore.ebook.order.domain.OrderRepository;
 import pl.bookstore.ebook.order.domain.OrderStatus;
 
 @Service
 @AllArgsConstructor
 class ManageOrderService implements ManageOrderUseCase {
-  private final OrderRepository repository;
+  private final OrderJpaRepository repository;
 
   @Override
   public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
@@ -22,7 +22,7 @@ class ManageOrderService implements ManageOrderUseCase {
 
   @Override
   public void deleteOrderById(Long id) {
-    repository.removeById(id);
+    repository.deleteById(id);
   }
 
   @Override

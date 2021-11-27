@@ -1,10 +1,26 @@
 package pl.bookstore.ebook.order.domain;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 import pl.bookstore.ebook.catalog.domain.Book;
 
-@Value
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Data
+@Entity
+@NoArgsConstructor
 public class OrderItem {
+  @Id
+  @GeneratedValue
+  Long id;
   Long bookId;
   int quantity;
+
+  public OrderItem(Long bookId, int quantity) {
+    this.bookId = bookId;
+    this.quantity = quantity;
+  }
 }
