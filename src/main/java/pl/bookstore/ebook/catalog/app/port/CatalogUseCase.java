@@ -21,8 +21,6 @@ public interface CatalogUseCase {
 
   Optional<Book> findById(Long id);
 
-  Optional<Book> findOneByAuthor(String author);
-
   List<Book> findByAuthor(String author);
 
   List<Book> findByAuthorAndTitle(String author, String title);
@@ -62,9 +60,6 @@ public interface CatalogUseCase {
     public Book updateFields(Book book) {
       if (StringUtils.isNotBlank(title)) {
           book.setTitle(title);
-      }
-      if (StringUtils.isNotBlank(author)) {
-        book.setAuthor(author);
       }
       if (year != null) {
         book.setYear(year);

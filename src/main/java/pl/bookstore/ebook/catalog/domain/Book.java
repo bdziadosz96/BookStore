@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @ToString
 @NoArgsConstructor
@@ -29,6 +30,10 @@ public class Book {
   private LocalDateTime createdAt;
   @LastModifiedDate
   private LocalDateTime updatedAt;
+
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable
+  private Set<Author> authors;
 
   public Book(String title, String author, Integer year, BigDecimal price) {
     this.title = title;
