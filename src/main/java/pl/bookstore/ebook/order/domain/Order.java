@@ -31,7 +31,7 @@ public class Order {
   @JoinColumn(name = "order_id")
   private List<OrderItem> items;
 
-  @Embedded
+  @ManyToOne(cascade = CascadeType.ALL)
   private Recipient recipient;
 
   @Builder.Default
