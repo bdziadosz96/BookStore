@@ -8,11 +8,11 @@ import java.util.Optional;
 public interface UploadUseCase {
     Upload save(SaveUploadCommand command);
 
-    Optional<Upload> getById(String id);
+    Optional<Upload> getById(Long id);
 
     List<Upload> getAll();
 
-    void removeById(String id);
+    void removeById(Long id);
 
     record SaveUploadCommand(String filename, byte[] file, String contentType) {}
 }

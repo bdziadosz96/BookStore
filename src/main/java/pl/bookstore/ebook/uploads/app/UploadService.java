@@ -1,44 +1,43 @@
 package pl.bookstore.ebook.uploads.app;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import pl.bookstore.ebook.uploads.app.port.UploadUseCase;
+import pl.bookstore.ebook.uploads.db.UploadJpaRepository;
 import pl.bookstore.ebook.uploads.domain.Upload;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 class UploadService implements UploadUseCase {
-  private final Map<String, Upload> storage = new ConcurrentHashMap<>();
+  private final UploadJpaRepository repository;
+
+  public UploadService(UploadJpaRepository repository) {
+    this.repository = repository;
+  }
 
   @Override
   public Upload save(SaveUploadCommand command) {
-    final String newId = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
     Upload upload =
         new Upload(
-            newId, command.file(), command.contentType(), command.filename(), LocalDateTime.now());
-    storage.put(upload.getId(), upload);
-    System.out.println("Upload saved " + upload.getFilename() + " with id: " + newId);
+            command.filename(), command.contentType(), command.file());
+    repository.save(upload);
+    System.out.println("Upload saved " + upload.getFilename() + " with id: " + upload.getId());
     return upload;
   }
 
   @Override
-  public Optional<Upload> getById(String id) {
-    return Optional.ofNullable(storage.get(id));
+  public Optional<Upload> getById(Long id) {
+    return repository.findById(id);
   }
 
   @Override
   public List<Upload> getAll() {
-    return new ArrayList<>(storage.values());
+    return repository.findAll();
   }
 
   @Override
-  public void removeById(String id) {
-    storage.remove(id);
+  public void removeById(Long id) {
+    repository.deleteById(id);
   }
 }

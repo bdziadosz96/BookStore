@@ -26,15 +26,21 @@ public class Order {
   @Id
   @GeneratedValue
   private Long id;
+
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name = "order_id")
   private List<OrderItem> items;
-  private transient Recipient recipient;
+
+  @Embedded
+  private Recipient recipient;
+
   @Builder.Default
   @Enumerated(STRING)
   private OrderStatus status = OrderStatus.NEW;
+
   @CreatedDate
   private LocalDateTime createdAt;
+
   @LastModifiedDate
   private LocalDateTime updatedAt;
 }
