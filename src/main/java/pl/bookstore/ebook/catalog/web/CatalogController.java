@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.*;
 
@@ -119,11 +120,11 @@ class CatalogController {
     private Integer year;
 
     CreateBookCommand toCreateCommand() {
-      return new CreateBookCommand(title, author, year, price);
+      return new CreateBookCommand(title, Set.of(), year, price);
     }
 
     UpdateBookCommand toUpdateCommand(Long id) {
-      return new UpdateBookCommand(id, title, author, year, price);
+      return new UpdateBookCommand(id, title, Set.of(), year, price);
     }
   }
 }

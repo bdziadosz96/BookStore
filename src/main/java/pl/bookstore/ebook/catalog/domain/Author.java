@@ -26,4 +26,9 @@ public class Author {
 
     @ManyToMany(fetch = FetchType.EAGER,mappedBy = "authors")
     private Set<Book> books;
+
+    public Author(String firstname, String lastname) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+    }
 }

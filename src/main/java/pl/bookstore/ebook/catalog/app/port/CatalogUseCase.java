@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
+import pl.bookstore.ebook.catalog.domain.Author;
 import pl.bookstore.ebook.catalog.domain.Book;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.Set;
 
 public interface CatalogUseCase {
 
@@ -39,11 +40,7 @@ public interface CatalogUseCase {
 
   record UpdateBookCoverCommand(Long id, byte[] file, String contentType, String fileName) {}
 
-  record CreateBookCommand(String title, String author, Integer year, BigDecimal price) {
-    public Book toBook() {
-      return new Book(title,author,year,price);
-    }
-  }
+  record CreateBookCommand(String title, Set<Long> authors, Integer year, BigDecimal price) {}
 
   record UpdateBookResponse(boolean success, List<String> errors) {}
 
@@ -53,13 +50,13 @@ public interface CatalogUseCase {
   class UpdateBookCommand {
     Long id;
     String title;
-    String author;
+    Set<Author> authors;
     Integer year;
     BigDecimal price;
 
     public Book updateFields(Book book) {
       if (StringUtils.isNotBlank(title)) {
-          book.setTitle(title);
+        book.setTitle(title);
       }
       if (year != null) {
         book.setYear(year);
@@ -70,6 +67,4 @@ public interface CatalogUseCase {
       return book;
     }
   }
-
-
 }

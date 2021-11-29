@@ -21,23 +21,21 @@ public class Book {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
+
   private String title;
-  private String author;
   private Integer year;
   private BigDecimal price;
   private Long coverId;
-  @CreatedDate
-  private LocalDateTime createdAt;
-  @LastModifiedDate
-  private LocalDateTime updatedAt;
+  @CreatedDate private LocalDateTime createdAt;
+  @LastModifiedDate private LocalDateTime updatedAt;
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable
   private Set<Author> authors;
 
-  public Book(String title, String author, Integer year, BigDecimal price) {
+  public Book(String title, Integer year, BigDecimal price) {
+
     this.title = title;
-    this.author = author;
     this.year = year;
     this.price = price;
   }
