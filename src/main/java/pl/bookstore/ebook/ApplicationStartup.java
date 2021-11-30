@@ -38,6 +38,10 @@ class ApplicationStartup implements CommandLineRunner {
         catalog
             .findOneByTitle("Effective Java")
             .orElseThrow(() -> new IllegalStateException("Cannot find book!"));
+    final Book clean_code =
+            catalog
+                    .findOneByTitle("Java - Clean Architecture")
+                    .orElseThrow(() -> new IllegalStateException("Cannot find book!"));
 
     Recipient recipient =
         Recipient.builder()
