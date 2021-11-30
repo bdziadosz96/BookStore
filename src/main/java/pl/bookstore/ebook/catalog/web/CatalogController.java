@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.domain.Book;
 
