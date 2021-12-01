@@ -59,14 +59,6 @@ class CatalogService implements CatalogUseCase {
   }
 
   @Override
-  public Optional<Book> findOneByAuthorAndTitle(String author, String title) {
-    return catalogRepository.findAll().stream()
-        //        .filter(book -> book.getAuthor().startsWith(author))
-        .filter(book -> book.getTitle().startsWith(title))
-        .findFirst();
-  }
-
-  @Override
   public List<Book> findAll() {
     return catalogRepository.findAll();
   }
@@ -80,17 +72,17 @@ class CatalogService implements CatalogUseCase {
   @Override
   public UpdateBookResponse updateBook(UpdateBookCommand updateBookCommand) {
     return catalogRepository
-        .findById(updateBookCommand.getId())
+        .findById(updateBookCommand.id())
         .map(
             book -> {
-              final Book updatedBook = updateBookCommand.updateFields(book);
+              final Book updatedBook = updateFiels(updateBookCommand, book);
               catalogRepository.save(updatedBook);
               return new UpdateBookResponse(true, Collections.emptyList());
             })
         .orElseGet(
             () ->
                 new UpdateBookResponse(
-                    false, List.of("Nie znaleziono książki o id " + updateBookCommand.getId())));
+                    false, List.of("Nie znaleziono książki o id " + updateBookCommand.id())));
   }
 
   @Override
@@ -129,18 +121,37 @@ class CatalogService implements CatalogUseCase {
 
   private Book toBook(CreateBookCommand command) {
     Book book = new Book(command.title(), command.year(), command.price());
-    final Set<Author> authors =
-        command.authors().stream()
-            .map(
-                authorId ->
-                    authorJpaRepository
-                        .findById(authorId)
-                        .orElseThrow(
-                            () ->
-                                new IllegalStateException(
-                                    "Unable to find author with id: " + authorId)))
-            .collect(Collectors.toSet());
+    final Set<Author> authors = fetchAuthorsByIds(command.authors());
     book.setAuthors(authors);
     return book;
+  }
+
+  private Book updateFiels(UpdateBookCommand command, Book book) {
+    if (command.title() != null) {
+      book.setTitle(command.title());
+    }
+    if (command.year() != null) {
+      book.setYear(command.year());
+    }
+    if (command.price() != null) {
+      book.setPrice(command.price());
+    }
+    if (command.authors() != null && command.authors().size() > 0) {
+      book.setAuthors(fetchAuthorsByIds(command.authors()));
+    }
+    return book;
+  }
+
+  private Set<Author> fetchAuthorsByIds(Set<Long> authors) {
+    return authors.stream()
+        .map(
+            authorId ->
+                authorJpaRepository
+                    .findById(authorId)
+                    .orElseThrow(
+                        () ->
+                            new IllegalStateException(
+                                "Unable to find author with id: " + authorId)))
+        .collect(Collectors.toSet());
   }
 }

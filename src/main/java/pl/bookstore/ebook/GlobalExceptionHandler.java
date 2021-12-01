@@ -28,4 +28,14 @@ class GlobalExceptionHandler {
     return new ResponseEntity<>(body, status);
   }
 
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<?> handleIllegalStateException(IllegalStateException e) {
+    Map<String, Object> body = new LinkedHashMap<>();
+    HttpStatus status = HttpStatus.BAD_REQUEST;
+    body.put("timestamp", new Date());
+    body.put("status", status.value());
+    body.put("errors", e.getLocalizedMessage());
+    return new ResponseEntity<>(body, status);
+  }
+
 }
