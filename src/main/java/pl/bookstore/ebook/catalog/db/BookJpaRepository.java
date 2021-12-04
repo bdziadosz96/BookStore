@@ -11,6 +11,6 @@ public interface BookJpaRepository extends JpaRepository<Book, Long> {
   List<Book> findByAuthors_firstnameContainsIgnoreCaseOrAuthors_lastnameContainsIgnoreCase(
       String firstname, String lastname);
 
-  @Query("SELECT b FROM Book b JOIN b.authors a WHERE a.firstname LIKE :author")
+  @Query("SELECT b FROM Book b JOIN b.authors a WHERE a.firstname LIKE :author")//test
   List<Book> findByAuthor(@Param("author") String author);
 }
