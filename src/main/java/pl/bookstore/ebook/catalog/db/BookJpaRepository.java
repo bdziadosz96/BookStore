@@ -28,6 +28,7 @@ public interface BookJpaRepository extends JpaRepository<Book, Long> {
           + " WHERE lower(b.title) LIKE lower(concat('%', :title,'%')) "
           + " AND "
           + " (lower(a.firstname) LIKE lower(concat('%', :name,'%')) " //test
+              //tt
           + " OR "
           + " lower(a.lastname) LIKE lower(concat('%', :name,'%'))) "
   )
