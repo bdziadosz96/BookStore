@@ -35,7 +35,10 @@ class CatalogController {
   @ResponseStatus(HttpStatus.OK)
   private List<Book> getAll(
       @RequestParam Optional<String> title, @RequestParam Optional<String> author) {
-    if (author.isPresent()) {
+    if (author.isPresent() && title.isPresent()) {
+      return catalog.findByAuthorAndTitle(author.get(), title.get());
+    }
+      else if (author.isPresent()) {
       return catalog.findByAuthor(author.get());
     } else if (title.isPresent()) {
       return catalog.findByTitle(title.get());

@@ -31,16 +31,17 @@ class CatalogService implements CatalogUseCase {
 
   @Override
   public List<Book> findByTitle(String title) {
-    return catalogRepository.findAll().stream()
-        .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
-        .toList();
+    return catalogRepository.findByTitleStartsWithIgnoreCase(title);
+  }
+
+  @Override
+  public List<Book> findByAuthorAndTitle(String author, String title) {
+    return catalogRepository.findByTitleAndAuthor(author, title);
   }
 
   @Override
   public Optional<Book> findOneByTitle(String title) {
-    return catalogRepository.findAll().stream()
-        .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
-        .findAny();
+    return catalogRepository.findDistinctFirstByTitle(title);
   }
 
   @Override
