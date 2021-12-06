@@ -113,8 +113,13 @@ class CatalogService implements CatalogUseCase {
   private Book toBook(CreateBookCommand command) {
     Book book = new Book(command.title(), command.year(), command.price());
     final Set<Author> authors = fetchAuthorsByIds(command.authors());
-    book.setAuthors(authors);
+    updateBooks(book, authors);
     return book;
+  }
+
+  private void updateBooks(Book book, Set<Author> authors) {
+    book.removeAuthors();
+    authors.forEach(book::addAuthor);
   }
 
   private Book updateFiels(UpdateBookCommand command, Book book) {
@@ -128,7 +133,7 @@ class CatalogService implements CatalogUseCase {
       book.setPrice(command.price());
     }
     if (command.authors() != null && command.authors().size() > 0) {
-      book.setAuthors(fetchAuthorsByIds(command.authors()));
+      updateBooks(book, fetchAuthorsByIds(command.authors()));
     }
     return book;
   }

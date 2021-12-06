@@ -1,6 +1,7 @@
 package pl.bookstore.ebook.catalog.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.HashSet;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -33,12 +34,28 @@ public class Book {
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable
   @JsonIgnoreProperties("books")
-  private Set<Author> authors;
+  private Set<Author> authors = new HashSet<>();
 
   public Book(String title, Integer year, BigDecimal price) {
 
     this.title = title;
     this.year = year;
     this.price = price;
+  }
+
+  public void addAuthor(Author author) {
+    authors.add(author);
+    author.getBooks().add(this);
+  }
+
+  public void removeAuthor(Author author) {
+    authors.remove(author);
+    author.getBooks().remove(this);
+  }
+
+  public void removeAuthors() {
+    final Book self = this;
+    authors.forEach(author -> author.getBooks().remove(self));
+    authors.clear();
   }
 }
