@@ -36,7 +36,7 @@ public class Order extends BaseEntity {
   @JoinColumn(name = "order_id")
   private List<OrderItem> items;
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
   private Recipient recipient;
 
   @Builder.Default

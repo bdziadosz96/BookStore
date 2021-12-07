@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
@@ -30,7 +31,10 @@ public class Author extends BaseEntity {
   @CreatedDate private LocalDateTime createdAt;
 
   @JsonIgnoreProperties("authors")
-  @ManyToMany(fetch = FetchType.EAGER, mappedBy = "authors")
+  @ManyToMany(
+      fetch = FetchType.EAGER,
+      mappedBy = "authors",
+      cascade = {CascadeType.MERGE, CascadeType.PERSIST})
   private Set<Book> books = new HashSet<>();
 
   public Author(final String firstname, final String lastname) {
