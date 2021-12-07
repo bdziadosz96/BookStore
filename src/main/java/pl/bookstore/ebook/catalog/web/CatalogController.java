@@ -1,32 +1,42 @@
 package pl.bookstore.ebook.catalog.web;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
-import pl.bookstore.ebook.catalog.domain.Book;
-
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
+import pl.bookstore.ebook.catalog.domain.Book;
 
-import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.*;
+import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.CreateBookCommand;
+import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.UpdateBookCommand;
+import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.UpdateBookCoverCommand;
+import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.UpdateBookResponse;
 
 @RestController
-@RequestMapping("/catalog")
 @AllArgsConstructor
 class CatalogController {
   private final CatalogUseCase catalog;
@@ -34,28 +44,27 @@ class CatalogController {
   @GetMapping()
   @ResponseStatus(HttpStatus.OK)
   private List<Book> getAll(
-      @RequestParam Optional<String> title, @RequestParam Optional<String> author) {
+      @RequestParam final Optional<String> title, @RequestParam final Optional<String> author) {
     if (author.isPresent() && title.isPresent()) {
       return catalog.findByAuthorAndTitle(author.get(), title.get());
-    }
-      else if (author.isPresent()) {
+    } else if (author.isPresent()) {
       return catalog.findByAuthor(author.get());
     } else if (title.isPresent()) {
       return catalog.findByTitle(title.get());
-    }else {
+    } else {
       return catalog.findAll();
     }
   }
 
   @GetMapping("/{id}")
-  private ResponseEntity<?> getById(@PathVariable Long id) {
+  private ResponseEntity<?> getById(@PathVariable final Long id) {
     return catalog.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<Void> addBook(
-      @Validated(CreateValidation.class) @RequestBody RestBookCommand command) {
+      @Validated(CreateValidation.class) @RequestBody final RestBookCommand command) {
     final Book book = catalog.addBook(command.toCreateCommand());
     final URI uri = createdBookURI(book);
     return ResponseEntity.created(uri).build();
@@ -63,15 +72,15 @@ class CatalogController {
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteBookBy(@PathVariable Long id) {
+  public void deleteBookBy(@PathVariable final Long id) {
     catalog.removeById(id);
   }
 
   @PatchMapping("/{id}")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public void updateBook(
-      @PathVariable Long id,
-      @Validated(UpdateValidation.class) @RequestBody RestBookCommand command) {
+      @PathVariable final Long id,
+      @Validated(UpdateValidation.class) @RequestBody final RestBookCommand command) {
     final UpdateBookResponse response = catalog.updateBook(command.toUpdateCommand(id));
     if (!response.success()) {
       final String message = String.join(", ", response.errors());
@@ -81,20 +90,21 @@ class CatalogController {
 
   @DeleteMapping("/{id}/cover")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void removeBookCover(@PathVariable Long id) {
+  public void removeBookCover(@PathVariable final Long id) {
     catalog.removeBookCover(id);
   }
 
   @PutMapping(value = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public void addBookCover(@PathVariable Long id, @RequestParam("file") MultipartFile file)
+  public void addBookCover(
+      @PathVariable final Long id, @RequestParam("file") final MultipartFile file)
       throws IOException {
     catalog.updateBookCover(
         new UpdateBookCoverCommand(
             id, file.getBytes(), file.getContentType(), file.getOriginalFilename()));
   }
 
-  private URI createdBookURI(Book book) {
+  private URI createdBookURI(final Book book) {
     return new CreatedURI("/" + book.getId().toString()).uri();
   }
 
@@ -124,7 +134,7 @@ class CatalogController {
       return new CreateBookCommand(title, authors, year, price);
     }
 
-    UpdateBookCommand toUpdateCommand(Long id) {
+    UpdateBookCommand toUpdateCommand(final Long id) {
       return new UpdateBookCommand(id, title, authors, year, price);
     }
   }
