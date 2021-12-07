@@ -1,26 +1,18 @@
 package pl.bookstore.ebook.order.domain;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Value;
-import pl.bookstore.ebook.catalog.domain.Book;
-
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import pl.bookstore.ebook.jpa.BaseEntity;
 
-@Data
+@Getter
+@Setter
 @Entity
 @NoArgsConstructor
-public class OrderItem {
-  @Id
-  @GeneratedValue
-  Long id;
+@AllArgsConstructor
+public class OrderItem extends BaseEntity {
   Long bookId;
   int quantity;
-
-  public OrderItem(Long bookId, int quantity) {
-    this.bookId = bookId;
-    this.quantity = quantity;
-  }
 }

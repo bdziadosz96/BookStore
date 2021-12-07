@@ -7,24 +7,24 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import pl.bookstore.ebook.jpa.BaseEntity;
 
-@Data
+@Getter
+@Setter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "books")
 @EntityListeners(AuditingEntityListener.class)
-public class Author {
-  @Id @GeneratedValue private Long id;
+public class Author extends BaseEntity {
   private String firstname;
   private String lastname;
   @CreatedDate private LocalDateTime createdAt;
@@ -33,17 +33,17 @@ public class Author {
   @ManyToMany(fetch = FetchType.EAGER, mappedBy = "authors")
   private Set<Book> books = new HashSet<>();
 
-  public Author(String firstname, String lastname) {
+  public Author(final String firstname, final String lastname) {
     this.firstname = firstname;
     this.lastname = lastname;
   }
 
-  public void addBook(Book book) {
+  public void addBook(final Book book) {
     books.add(book);
     book.getAuthors().add(this);
   }
 
-  public void removeBook(Book book) {
+  public void removeBook(final Book book) {
     books.remove(book);
     book.getAuthors().remove(this);
   }
