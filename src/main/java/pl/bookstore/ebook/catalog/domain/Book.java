@@ -8,7 +8,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
@@ -36,9 +35,7 @@ public class Book extends BaseEntity {
   @CreatedDate private LocalDateTime createdAt;
   @LastModifiedDate private LocalDateTime updatedAt;
 
-  @ManyToMany(
-      fetch = FetchType.EAGER,
-      cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+  @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
   @JoinTable
   @JsonIgnoreProperties("books")
   private Set<Author> authors = new HashSet<>();

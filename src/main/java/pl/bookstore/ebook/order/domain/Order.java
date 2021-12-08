@@ -32,7 +32,7 @@ import static javax.persistence.EnumType.STRING;
 @Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 public class Order extends BaseEntity {
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "order_id")
   private List<OrderItem> items;
 

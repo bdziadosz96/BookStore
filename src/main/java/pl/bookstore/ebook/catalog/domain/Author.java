@@ -7,7 +7,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,7 +31,6 @@ public class Author extends BaseEntity {
 
   @JsonIgnoreProperties("authors")
   @ManyToMany(
-      fetch = FetchType.EAGER,
       mappedBy = "authors",
       cascade = {CascadeType.MERGE, CascadeType.PERSIST})
   private Set<Book> books = new HashSet<>();
