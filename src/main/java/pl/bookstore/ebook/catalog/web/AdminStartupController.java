@@ -1,8 +1,11 @@
-package pl.bookstore.ebook;
+package pl.bookstore.ebook.catalog.web;
 
+import java.math.BigDecimal;
+import java.util.Set;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.db.AuthorJpaRepository;
 import pl.bookstore.ebook.catalog.domain.Author;
@@ -12,23 +15,18 @@ import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.domain.OrderItem;
 import pl.bookstore.ebook.order.domain.Recipient;
 
-import java.math.BigDecimal;
-import java.util.Set;
-
-import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.*;
-import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.*;
-
-@Component
+@RequestMapping("/admin")
+@RestController
 @AllArgsConstructor
-class ApplicationStartup implements CommandLineRunner {
+class AdminStartupController {
 
   private final CatalogUseCase catalog;
   private final ManageOrderUseCase manageOrder;
   private final QueryOrderUseCase queryOrder;
   private final AuthorJpaRepository authorRepository;
 
-  @Override
-  public void run(final String... args) {
+  @PostMapping("/init")
+  public void initalizeData() {
     initData();
     placeOrder();
   }
@@ -39,11 +37,11 @@ class ApplicationStartup implements CommandLineRunner {
             .findOneByTitle("Effective Java")
             .orElseThrow(() -> new IllegalStateException("Cannot find book!"));
     final Book clean_code =
-            catalog
-                    .findOneByTitle("Java - Clean Architecture")
-                    .orElseThrow(() -> new IllegalStateException("Cannot find book!"));
+        catalog
+            .findOneByTitle("Java - Clean Architecture")
+            .orElseThrow(() -> new IllegalStateException("Cannot find book!"));
 
-    Recipient recipient =
+    final Recipient recipient =
         Recipient.builder()
             .city("Warszawa")
             .email("bdziadosz96@icloud.com")
@@ -53,14 +51,14 @@ class ApplicationStartup implements CommandLineRunner {
             .zipCode("00-000")
             .build();
 
-    PlaceOrderCommand command =
-        PlaceOrderCommand.builder()
+    final ManageOrderUseCase.PlaceOrderCommand command =
+        ManageOrderUseCase.PlaceOrderCommand.builder()
             .recipient(recipient)
             .item(new OrderItem(effective_java.getId(), 16))
             .item(new OrderItem(clean_code.getId(), 7))
             .build();
 
-    final PlaceOrderResponse response = manageOrder.placeOrder(command);
+    final ManageOrderUseCase.PlaceOrderResponse response = manageOrder.placeOrder(command);
     System.out.println("Created ORDER with ID " + response.getOrderId());
 
     queryOrder
@@ -72,15 +70,20 @@ class ApplicationStartup implements CommandLineRunner {
   }
 
   private void initData() {
-    Author sampleOne = new Author("Joshua", "Bloch");
-    Author sampleTwo = new Author("Uncle", "Bob");
+    final Author sampleOne = new Author("Joshua", "Bloch");
+    final Author sampleTwo = new Author("Uncle", "Bob");
     authorRepository.save(sampleOne);
     authorRepository.save(sampleTwo);
 
-    final CreateBookCommand effectiveJava =
-        new CreateBookCommand("Effective Java", Set.of(sampleOne.getId()), 2005, new BigDecimal("80.00"));
-    final CreateBookCommand cleanJava =
-        new CreateBookCommand("Java - Clean Architecture", Set.of(sampleOne.getId(),sampleTwo.getId()), 2011, new BigDecimal("64.00"));
+    final CatalogUseCase.CreateBookCommand effectiveJava =
+        new CatalogUseCase.CreateBookCommand(
+            "Effective Java", Set.of(sampleOne.getId()), 2005, new BigDecimal("80.00"));
+    final CatalogUseCase.CreateBookCommand cleanJava =
+        new CatalogUseCase.CreateBookCommand(
+            "Java - Clean Architecture",
+            Set.of(sampleOne.getId(), sampleTwo.getId()),
+            2011,
+            new BigDecimal("64.00"));
 
     catalog.addBook(effectiveJava);
     catalog.addBook(cleanJava);
