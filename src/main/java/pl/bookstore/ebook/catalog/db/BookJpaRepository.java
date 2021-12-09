@@ -1,16 +1,19 @@
 package pl.bookstore.ebook.catalog.db;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pl.bookstore.ebook.catalog.domain.Book;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface BookJpaRepository extends JpaRepository<Book, Long> {
   List<Book> findByAuthors_firstnameContainsIgnoreCaseOrAuthors_lastnameContainsIgnoreCase(
       String firstname, String lastname);
+
+  @Override
+  @Query("SELECT b FROM Book b join fetch b.authors")
+  List<Book> findAll();
 
   @Query(
       " SELECT b FROM Book b JOIN b.authors a "
@@ -29,7 +32,6 @@ public interface BookJpaRepository extends JpaRepository<Book, Long> {
           + " AND "
           + " (lower(a.firstname) LIKE lower(concat('%', :name,'%')) "
           + " OR "
-          + " lower(a.lastname) LIKE lower(concat('%', :name,'%'))) "
-  )
+          + " lower(a.lastname) LIKE lower(concat('%', :name,'%'))) ")
   List<Book> findByTitleAndAuthor(@Param("name") String name, @Param("title") String title);
 }

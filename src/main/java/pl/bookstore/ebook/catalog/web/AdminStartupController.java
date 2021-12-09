@@ -3,10 +3,12 @@ package pl.bookstore.ebook.catalog.web;
 import java.math.BigDecimal;
 import java.util.Set;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
+import pl.bookstore.ebook.catalog.app.port.CatalogUseCase.CreateBookCommand;
 import pl.bookstore.ebook.catalog.db.AuthorJpaRepository;
 import pl.bookstore.ebook.catalog.domain.Author;
 import pl.bookstore.ebook.catalog.domain.Book;
@@ -26,6 +28,7 @@ class AdminStartupController {
   private final AuthorJpaRepository authorRepository;
 
   @PostMapping("/init")
+  @Transactional()
   public void initalizeData() {
     initData();
     placeOrder();
@@ -75,11 +78,11 @@ class AdminStartupController {
     authorRepository.save(sampleOne);
     authorRepository.save(sampleTwo);
 
-    final CatalogUseCase.CreateBookCommand effectiveJava =
-        new CatalogUseCase.CreateBookCommand(
+    final CreateBookCommand effectiveJava =
+        new CreateBookCommand(
             "Effective Java", Set.of(sampleOne.getId()), 2005, new BigDecimal("80.00"));
-    final CatalogUseCase.CreateBookCommand cleanJava =
-        new CatalogUseCase.CreateBookCommand(
+    final CreateBookCommand cleanJava =
+        new CreateBookCommand(
             "Java - Clean Architecture",
             Set.of(sampleOne.getId(), sampleTwo.getId()),
             2011,
