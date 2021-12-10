@@ -13,6 +13,7 @@ import pl.bookstore.ebook.catalog.db.AuthorJpaRepository;
 import pl.bookstore.ebook.catalog.domain.Author;
 import pl.bookstore.ebook.catalog.domain.Book;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
+import pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderResponse;
 import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.domain.OrderItem;
 import pl.bookstore.ebook.order.domain.Recipient;
@@ -61,15 +62,11 @@ class AdminStartupController {
             .item(new OrderItem(clean_code.getId(), 7))
             .build();
 
-    final ManageOrderUseCase.PlaceOrderResponse response = manageOrder.placeOrder(command);
-    System.out.println("Created ORDER with ID " + response.getOrderId());
-
-    queryOrder
-        .findAll()
-        .forEach(
-            order ->
-                System.out.println(
-                    "GOT ORDER WITH TOTAL PRICE: " + order.totalPrice() + " DETAILS " + order));
+    final PlaceOrderResponse response = manageOrder.placeOrder(command);
+    System.out.println(response.isSuccess());
+    System.out.println(response.getLeft());
+    System.out.println(response.getRight());
+    System.out.println(response.getClass().getName());
   }
 
   private void initData() {

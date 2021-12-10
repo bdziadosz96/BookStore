@@ -1,23 +1,21 @@
 package pl.bookstore.ebook.order.app.port;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
+import pl.bookstore.ebook.commons.Either;
 import pl.bookstore.ebook.order.domain.OrderItem;
 import pl.bookstore.ebook.order.domain.OrderStatus;
 import pl.bookstore.ebook.order.domain.Recipient;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public interface ManageOrderUseCase {
   PlaceOrderResponse placeOrder(PlaceOrderCommand command);
 
   void deleteOrderById(Long id);
 
-  void updateOrderStatus(Long id, OrderStatus status);
+  UpdateOrderStatusResponse updateOrderStatus(UpdateOrderStatusCommand command);
 
   @Value
   @Builder
@@ -33,32 +31,31 @@ public interface ManageOrderUseCase {
     OrderStatus status;
   }
 
-  @Value
-  class PlaceOrderResponse {
-    boolean success;
-    Long orderId;
-    List<String> errors;
-
-    public static PlaceOrderResponse success(Long orderId) {
-      return new PlaceOrderResponse(true, orderId, Collections.emptyList());
+  class PlaceOrderResponse extends Either<String, Long> {
+    PlaceOrderResponse(final boolean success, final String left, final Long right) {
+      super(success, left, right);
     }
 
-    public static PlaceOrderResponse failure(String... errors) {
-      return new PlaceOrderResponse(false, null, Arrays.asList(errors));
+    public static PlaceOrderResponse success(final Long orderId) {
+      return new PlaceOrderResponse(true, null, orderId);
+    }
+
+    public static PlaceOrderResponse failure(final String errors) {
+      return new PlaceOrderResponse(false, errors, null);
     }
   }
 
-  @Value
-  class UpdateOrderStatusResponse {
-    boolean success;
-    List<String> errors;
-
-    public static UpdateOrderStatusResponse success() {
-      return new UpdateOrderStatusResponse(true,Collections.emptyList());
+  class UpdateOrderStatusResponse extends Either<String, Long> {
+    UpdateOrderStatusResponse(final boolean success, final String left, final Long right) {
+      super(success, left, right);
     }
 
-    public static UpdateOrderStatusResponse failure() {
-      return new UpdateOrderStatusResponse(false,Collections.emptyList());
+    public static UpdateOrderStatusResponse success(final Long id) {
+      return new UpdateOrderStatusResponse(true, null, id);
+    }
+
+    public static UpdateOrderStatusResponse failure(final String error) {
+      return new UpdateOrderStatusResponse(false, error, null);
     }
   }
 }
