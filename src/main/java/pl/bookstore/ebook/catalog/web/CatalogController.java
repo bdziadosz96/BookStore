@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.domain.Book;
+import pl.bookstore.ebook.commons.CreatedURI;
 
 import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.CreateBookCommand;
 import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.UpdateBookCommand;
