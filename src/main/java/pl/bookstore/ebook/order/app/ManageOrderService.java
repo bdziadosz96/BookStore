@@ -33,6 +33,8 @@ class ManageOrderService implements ManageOrderUseCase {
       final Order order = orderOptional.get();
       order.updateStatus(status);
       repository.save(order);
+    } else {
+      throw new IllegalStateException("Cannot find order with id: " + id);
     }
   }
 }
