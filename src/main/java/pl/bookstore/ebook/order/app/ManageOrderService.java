@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
 import pl.bookstore.ebook.order.db.OrderJpaRepository;
 import pl.bookstore.ebook.order.domain.Order;
+import pl.bookstore.ebook.order.domain.OrderStatus;
 
 @Service
 @AllArgsConstructor
@@ -26,11 +27,11 @@ class ManageOrderService implements ManageOrderUseCase {
   }
 
   @Override
-  public void updateOrderStatus(final String status) {
-    final Optional<Order> orderOptional = repository.findById(command.getId());
+  public void updateOrderStatus(final Long id, final OrderStatus status) {
+    final Optional<Order> orderOptional = repository.findById(id);
     if (orderOptional.isPresent()) {
       final Order order = orderOptional.get();
-      order.updateStatus(command.getStatus());
+      order.updateStatus(status);
       repository.save(order);
     }
   }

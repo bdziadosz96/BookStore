@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import pl.bookstore.ebook.commons.CreatedURI;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderCommand;
@@ -24,6 +25,7 @@ import pl.bookstore.ebook.order.domain.OrderStatus;
 import pl.bookstore.ebook.order.domain.Recipient;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
@@ -62,14 +64,13 @@ class OrderController {
 
   @PutMapping("/{id}/status")
   @ResponseStatus(ACCEPTED)
-  public ResponseEntity<?> updateOrderStatus(
-      @PathVariable final Long id, @RequestBody final String newStatus) {
-    OrderStatus.checkString(newStatus);
-    return manageOrder
-        .updateOrderStatus(command.toUpdateOrderStatusCommand(id))
-        .handle(
-            statusId -> ResponseEntity.accepted(orderUri(id)).build(),
-            error -> ResponseEntity.badRequest().body(error));
+  public void updateOrderStatus(
+      @PathVariable final Long id, @RequestBody final UpdateStatusCommand command) {
+    final OrderStatus orderStatus =
+        OrderStatus.checkString(command.status)
+            .orElseThrow(
+                () -> new ResponseStatusException(BAD_REQUEST, "Unkown status: " + command.status));
+    manageOrder.updateOrderStatus(id, orderStatus);
   }
 
   @DeleteMapping("/{id}")
@@ -97,6 +98,11 @@ class OrderController {
   }
 
   @Data
+  static class UpdateStatusCommand {
+    String status;
+  }
+
+  @Data
   static class OrderItemCommand {
     Long bookId;
     int quantity;
@@ -114,10 +120,5 @@ class OrderController {
     Recipient toRecipient() {
       return new Recipient(name, phone, street, city, zipCode, email);
     }
-  }
-
-  @Data
-  static class UpdateStatusCommand {
-    String status;
   }
 }

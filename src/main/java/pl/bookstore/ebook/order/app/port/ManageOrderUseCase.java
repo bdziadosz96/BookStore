@@ -15,7 +15,7 @@ public interface ManageOrderUseCase {
 
   void deleteOrderById(Long id);
 
-  void updateOrderStatus(String status);
+  void updateOrderStatus(Long id, OrderStatus status);
 
   @Value
   @Builder

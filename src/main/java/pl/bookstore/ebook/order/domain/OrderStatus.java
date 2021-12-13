@@ -29,11 +29,10 @@ public enum OrderStatus {
     ABANDONED,
     SHIPPED;
 
-    public static boolean checkString(final String value) {
-        final Optional<OrderStatus> first = Arrays.stream(values())
+    public static Optional<OrderStatus> checkString(final String value) {
+        return Arrays.stream(values())
                 .filter(it -> StringUtils.equalsIgnoreCase(it.name(), value))
                 .findFirst();
-        return first.isPresent();
     }
 
     public OrderStatus update(final OrderStatus orderStatus) {
