@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.bookstore.ebook.commons.CreatedURI;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderCommand;
-import pl.bookstore.ebook.order.app.port.ManageOrderUseCase.UpdateOrderStatusCommand;
 import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.domain.OrderItem;
 import pl.bookstore.ebook.order.domain.OrderStatus;
@@ -64,12 +63,12 @@ class OrderController {
   @PutMapping("/{id}/status")
   @ResponseStatus(ACCEPTED)
   public ResponseEntity<?> updateOrderStatus(
-      @PathVariable final Long id, @RequestBody final CreateUpdateStatusCommand command) {
-    OrderStatus.checkString(command.getOrderStatus().toString());
+      @PathVariable final Long id, @RequestBody final String newStatus) {
+    OrderStatus.checkString(newStatus);
     return manageOrder
         .updateOrderStatus(command.toUpdateOrderStatusCommand(id))
         .handle(
-            statusId -> ResponseEntity.created(orderUri(id)).build(),
+            statusId -> ResponseEntity.accepted(orderUri(id)).build(),
             error -> ResponseEntity.badRequest().body(error));
   }
 
@@ -94,15 +93,6 @@ class OrderController {
               .map(item -> new OrderItem(item.bookId, item.quantity))
               .collect(Collectors.toList());
       return new PlaceOrderCommand(orderItems, recipient.toRecipient());
-    }
-  }
-
-  @Data
-  static class CreateUpdateStatusCommand {
-    OrderStatus orderStatus;
-
-    UpdateOrderStatusCommand toUpdateOrderStatusCommand(final Long id) {
-      return new UpdateOrderStatusCommand(id, orderStatus);
     }
   }
 

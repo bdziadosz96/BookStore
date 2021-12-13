@@ -13,6 +13,7 @@ import pl.bookstore.ebook.catalog.db.AuthorJpaRepository;
 import pl.bookstore.ebook.catalog.domain.Author;
 import pl.bookstore.ebook.catalog.domain.Book;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
+import pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderCommand;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderResponse;
 import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.domain.OrderItem;
@@ -55,18 +56,14 @@ class AdminStartupController {
             .zipCode("00-000")
             .build();
 
-    final ManageOrderUseCase.PlaceOrderCommand command =
-        ManageOrderUseCase.PlaceOrderCommand.builder()
+    final PlaceOrderCommand command =
+        PlaceOrderCommand.builder()
             .recipient(recipient)
             .item(new OrderItem(effective_java.getId(), 16))
             .item(new OrderItem(clean_code.getId(), 7))
             .build();
 
     final PlaceOrderResponse response = manageOrder.placeOrder(command);
-    System.out.println(response.isSuccess());
-    System.out.println(response.getLeft());
-    System.out.println(response.getRight());
-    System.out.println(response.getClass().getName());
   }
 
   private void initData() {

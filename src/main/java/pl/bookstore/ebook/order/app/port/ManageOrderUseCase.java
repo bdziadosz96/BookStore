@@ -15,7 +15,7 @@ public interface ManageOrderUseCase {
 
   void deleteOrderById(Long id);
 
-  UpdateOrderStatusResponse updateOrderStatus(UpdateOrderStatusCommand command);
+  void updateOrderStatus(String status);
 
   @Value
   @Builder
@@ -42,20 +42,6 @@ public interface ManageOrderUseCase {
 
     public static PlaceOrderResponse failure(final String errors) {
       return new PlaceOrderResponse(false, errors, null);
-    }
-  }
-
-  class UpdateOrderStatusResponse extends Either<String, Long> {
-    UpdateOrderStatusResponse(final boolean success, final String left, final Long right) {
-      super(success, left, right);
-    }
-
-    public static UpdateOrderStatusResponse success(final Long id) {
-      return new UpdateOrderStatusResponse(true, null, id);
-    }
-
-    public static UpdateOrderStatusResponse failure(final String error) {
-      return new UpdateOrderStatusResponse(false, error, null);
     }
   }
 }

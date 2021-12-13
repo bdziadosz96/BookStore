@@ -1,43 +1,43 @@
 package pl.bookstore.ebook.order.domain;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Arrays;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 
 public enum OrderStatus {
     NEW {
         @Override
-        public OrderStatus updateStatus(OrderStatus orderStatus) {
+        public OrderStatus update(final OrderStatus orderStatus) {
             return switch (orderStatus) {
-                case NEW -> NEW;
+                case PAID -> PAID;
                 case CANCELED -> CANCELED;
                 case ABANDONED -> ABANDONED;
-                default -> super.updateStatus(orderStatus);
+                default -> super.update(orderStatus);
             };
         }
     },
     PAID {
       @Override
-      public OrderStatus updateStatus(OrderStatus orderStatus) {
-        return switch (orderStatus) {
-          case SHIPPED -> SHIPPED;
-          default -> super.updateStatus(orderStatus);
-        };
+      public OrderStatus update(final OrderStatus orderStatus) {
+          if (orderStatus == SHIPPED) {
+              return SHIPPED;
+          }
+          return super.update(orderStatus);
       }
     },
     CANCELED,
     ABANDONED,
     SHIPPED;
 
-    public static Optional<OrderStatus> checkString(String value) {
-        return Arrays.stream(values())
+    public static boolean checkString(final String value) {
+        final Optional<OrderStatus> first = Arrays.stream(values())
                 .filter(it -> StringUtils.equalsIgnoreCase(it.name(), value))
                 .findFirst();
+        return first.isPresent();
     }
 
-    public OrderStatus updateStatus(OrderStatus orderStatus) {
-        throw new IllegalStateException("Status cannot be update from: " + this.name()
-                + " to following value" + orderStatus);
+    public OrderStatus update(final OrderStatus orderStatus) {
+        throw new IllegalStateException("Status cannot be update from: " + name()
+                + " to: " + orderStatus);
     }
 }

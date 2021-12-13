@@ -12,7 +12,7 @@ public interface BookJpaRepository extends JpaRepository<Book, Long> {
       String firstname, String lastname);
 
   @Override
-  @Query("SELECT b FROM Book b join fetch b.authors")
+  @Query("SELECT DISTINCT b FROM Book b join fetch b.authors")
   List<Book> findAll();
 
   @Query(
