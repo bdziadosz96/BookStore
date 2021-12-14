@@ -1,5 +1,6 @@
 package pl.bookstore.ebook.order.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,10 +16,11 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @Builder
 @Entity
 public class Recipient extends BaseEntity {
-  private String name;
-  private String phone;
-  private String street;
-  private String city;
-  private String zipCode;
-  private String email;
+    @Column(unique = true)
+    private String email;
+    private String name;
+    private String phone;
+    private String street;
+    private String city;
+    private String zipCode;
 }

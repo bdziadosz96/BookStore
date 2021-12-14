@@ -7,12 +7,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.bookstore.ebook.catalog.db.BookJpaRepository;
+import pl.bookstore.ebook.catalog.db.RecipientJpaRepository;
 import pl.bookstore.ebook.catalog.domain.Book;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
 import pl.bookstore.ebook.order.db.OrderJpaRepository;
 import pl.bookstore.ebook.order.domain.Order;
 import pl.bookstore.ebook.order.domain.OrderItem;
 import pl.bookstore.ebook.order.domain.OrderStatus;
+import pl.bookstore.ebook.order.domain.Recipient;
 
 @Service
 @AllArgsConstructor
@@ -20,6 +22,7 @@ import pl.bookstore.ebook.order.domain.OrderStatus;
 class ManageOrderService implements ManageOrderUseCase {
     private final OrderJpaRepository orderRepository;
     private final BookJpaRepository bookRepository;
+    private final RecipientJpaRepository recipientRepository;
 
     @Override
     public PlaceOrderResponse placeOrder(final PlaceOrderCommand command) {
@@ -31,11 +34,16 @@ class ManageOrderService implements ManageOrderUseCase {
         final Order order = Order
                 .builder()
                 .items(items)
-                .recipient(command.getRecipient())
+                .recipient(getOrCreateRecipient(command.getRecipient()))
                 .build();
         final Order save = orderRepository.save(order);
         bookRepository.saveAll(updateBooks(items));
         return PlaceOrderResponse.success(save.getId());
+    }
+
+    private Recipient getOrCreateRecipient(final Recipient recipient) {
+        return recipientRepository.findRecipientByEmailIgnoreCase(recipient.getEmail())
+                .orElse(recipient);
     }
 
     private Set<Book> updateBooks(final Set<OrderItem> items) {
