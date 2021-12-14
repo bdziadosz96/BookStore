@@ -1,11 +1,10 @@
 package pl.bookstore.ebook.catalog.app.port;
 
-import pl.bookstore.ebook.catalog.domain.Book;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import pl.bookstore.ebook.catalog.domain.Book;
 
 public interface CatalogUseCase {
 
@@ -33,10 +32,11 @@ public interface CatalogUseCase {
 
   record UpdateBookCoverCommand(Long id, byte[] file, String contentType, String fileName) {}
 
-  record CreateBookCommand(String title, Set<Long> authors, Integer year, BigDecimal price) {}
+  record CreateBookCommand(
+      String title, Set<Long> authors, Integer year, BigDecimal price, Long available) {}
 
   record UpdateBookResponse(boolean success, List<String> errors) {}
 
   record UpdateBookCommand(
-      Long id, String title, Set<Long> authors, Integer year, BigDecimal price) {}
+      Long id, String title, Set<Long> authors, Integer year, BigDecimal price, Long available) {}
 }

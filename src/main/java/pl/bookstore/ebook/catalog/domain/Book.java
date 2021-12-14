@@ -28,38 +28,42 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class Book extends BaseEntity {
-  private String title;
-  private Integer year;
-  private BigDecimal price;
-  private Long coverId;
-  @CreatedDate private LocalDateTime createdAt;
-  @LastModifiedDate private LocalDateTime updatedAt;
+    private String title;
+    private Integer year;
+    private BigDecimal price;
+    private Long coverId;
+    private Long available;
+    @CreatedDate
+    private LocalDateTime createdAt;
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
-  @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-  @JoinTable
-  @JsonIgnoreProperties("books")
-  private Set<Author> authors = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable
+    @JsonIgnoreProperties("books")
+    private Set<Author> authors = new HashSet<>();
 
-  public Book(final String title, final Integer year, final BigDecimal price) {
+    public Book(
+            final String title, final Integer year, final BigDecimal price, final Long available) {
+        this.title = title;
+        this.year = year;
+        this.price = price;
+        this.available = available;
+    }
 
-    this.title = title;
-    this.year = year;
-    this.price = price;
-  }
+    public void addAuthor(final Author author) {
+        authors.add(author);
+        author.getBooks().add(this);
+    }
 
-  public void addAuthor(final Author author) {
-    authors.add(author);
-    author.getBooks().add(this);
-  }
+    public void removeAuthor(final Author author) {
+        authors.remove(author);
+        author.getBooks().remove(this);
+    }
 
-  public void removeAuthor(final Author author) {
-    authors.remove(author);
-    author.getBooks().remove(this);
-  }
-
-  public void removeAuthors() {
-    final Book self = this;
-    authors.forEach(author -> author.getBooks().remove(self));
-    authors.clear();
-  }
+    public void removeAuthors() {
+        final Book self = this;
+        authors.forEach(author -> author.getBooks().remove(self));
+        authors.clear();
+    }
 }

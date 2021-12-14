@@ -1,14 +1,14 @@
 package pl.bookstore.ebook.order.app.port;
 
-import lombok.Value;
-import pl.bookstore.ebook.catalog.domain.Book;
-import pl.bookstore.ebook.order.domain.OrderStatus;
-import pl.bookstore.ebook.order.domain.Recipient;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import lombok.Value;
+import pl.bookstore.ebook.order.domain.OrderItem;
+import pl.bookstore.ebook.order.domain.OrderStatus;
+import pl.bookstore.ebook.order.domain.Recipient;
 
 public interface QueryOrderUseCase {
     List<OrderDto> findAll();
@@ -19,20 +19,16 @@ public interface QueryOrderUseCase {
     class OrderDto {
         Long id;
         OrderStatus status;
-        List<OrderItemDto> items;
+        Set<OrderItem> items;
         Recipient recipient;
         LocalDateTime createdAt;
+
 
         public BigDecimal totalPrice() {
             return items.stream()
                     .map(item -> item.getBook().getPrice().multiply(new BigDecimal(item.getQuantity())))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
         }
-    }
 
-    @Value
-    class OrderItemDto {
-        Book book;
-        int quantity;
     }
 }

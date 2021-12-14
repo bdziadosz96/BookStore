@@ -10,6 +10,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
@@ -42,103 +43,109 @@ import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.UpdateBookRespo
 @RequestMapping("/catalog")
 @AllArgsConstructor
 class CatalogController {
-  private final CatalogUseCase catalog;
+    private final CatalogUseCase catalog;
 
-  @GetMapping()
-  @ResponseStatus(HttpStatus.OK)
-  private List<Book> getAll(
-      @RequestParam final Optional<String> title, @RequestParam final Optional<String> author) {
-    if (author.isPresent() && title.isPresent()) {
-      return catalog.findByAuthorAndTitle(author.get(), title.get());
-    } else if (author.isPresent()) {
-      return catalog.findByAuthor(author.get());
-    } else if (title.isPresent()) {
-      return catalog.findByTitle(title.get());
-    } else {
-      return catalog.findAll();
-    }
-  }
-
-  @GetMapping("/{id}")
-  private ResponseEntity<?> getById(@PathVariable final Long id) {
-    return catalog.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-  }
-
-  @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<Void> addBook(
-      @Validated(CreateValidation.class) @RequestBody final RestBookCommand command) {
-    final Book book = catalog.addBook(command.toCreateCommand());
-    final URI uri = createdBookURI(book);
-    return ResponseEntity.created(uri).build();
-  }
-
-  @DeleteMapping("/{id}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteBookBy(@PathVariable final Long id) {
-    catalog.removeById(id);
-  }
-
-  @PatchMapping("/{id}")
-  @ResponseStatus(HttpStatus.ACCEPTED)
-  public void updateBook(
-      @PathVariable final Long id,
-      @Validated(UpdateValidation.class) @RequestBody final RestBookCommand command) {
-    final UpdateBookResponse response = catalog.updateBook(command.toUpdateCommand(id));
-    if (!response.success()) {
-      final String message = String.join(", ", response.errors());
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
-    }
-  }
-
-  @DeleteMapping("/{id}/cover")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void removeBookCover(@PathVariable final Long id) {
-    catalog.removeBookCover(id);
-  }
-
-  @PutMapping(value = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @ResponseStatus(HttpStatus.ACCEPTED)
-  public void addBookCover(
-      @PathVariable final Long id, @RequestParam("file") final MultipartFile file)
-      throws IOException {
-    catalog.updateBookCover(
-        new UpdateBookCoverCommand(
-            id, file.getBytes(), file.getContentType(), file.getOriginalFilename()));
-  }
-
-  private URI createdBookURI(final Book book) {
-    return new CreatedURI("/" + book.getId().toString()).uri();
-  }
-
-  interface UpdateValidation {}
-
-  interface CreateValidation {}
-
-  @Data
-  private static class RestBookCommand {
-    @DecimalMin(
-        value = "0.01",
-        message = "Price cannot be lower than 0.01",
-        groups = {CreateValidation.class, UpdateValidation.class})
-    @NotNull(message = "Please provide correct price")
-    private BigDecimal price;
-
-    @NotBlank(message = "title cannot be blank", groups = CreateValidation.class)
-    private String title;
-
-    @NotEmpty(message = "author cannot be blank", groups = CreateValidation.class)
-    private Set<Long> authors;
-
-    @NotNull(message = "year cannot be null", groups = CreateValidation.class)
-    private Integer year;
-
-    CreateBookCommand toCreateCommand() {
-      return new CreateBookCommand(title, authors, year, price);
+    @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
+    private List<Book> getAll(
+            @RequestParam final Optional<String> title, @RequestParam final Optional<String> author) {
+        if (author.isPresent() && title.isPresent()) {
+            return catalog.findByAuthorAndTitle(author.get(), title.get());
+        } else if (author.isPresent()) {
+            return catalog.findByAuthor(author.get());
+        } else if (title.isPresent()) {
+            return catalog.findByTitle(title.get());
+        } else {
+            return catalog.findAll();
+        }
     }
 
-    UpdateBookCommand toUpdateCommand(final Long id) {
-      return new UpdateBookCommand(id, title, authors, year, price);
+    @GetMapping("/{id}")
+    private ResponseEntity<?> getById(@PathVariable final Long id) {
+        return catalog.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
-  }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Void> addBook(
+            @Validated(CreateValidation.class) @RequestBody final RestBookCommand command) {
+        final Book book = catalog.addBook(command.toCreateCommand());
+        final URI uri = createdBookURI(book);
+        return ResponseEntity.created(uri).build();
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBookBy(@PathVariable final Long id) {
+        catalog.removeById(id);
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateBook(
+            @PathVariable final Long id,
+            @Validated(UpdateValidation.class) @RequestBody final RestBookCommand command) {
+        final UpdateBookResponse response = catalog.updateBook(command.toUpdateCommand(id));
+        if (!response.success()) {
+            final String message = String.join(", ", response.errors());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
+    }
+
+    @DeleteMapping("/{id}/cover")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeBookCover(@PathVariable final Long id) {
+        catalog.removeBookCover(id);
+    }
+
+    @PutMapping(value = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void addBookCover(
+            @PathVariable final Long id, @RequestParam("file") final MultipartFile file)
+            throws IOException {
+        catalog.updateBookCover(
+                new UpdateBookCoverCommand(
+                        id, file.getBytes(), file.getContentType(), file.getOriginalFilename()));
+    }
+
+    private URI createdBookURI(final Book book) {
+        return new CreatedURI("/" + book.getId().toString()).uri();
+    }
+
+    interface UpdateValidation {
+    }
+
+    interface CreateValidation {
+    }
+
+    @Data
+    private static class RestBookCommand {
+        @DecimalMin(
+                value = "0.01",
+                message = "Price cannot be lower than 0.01",
+                groups = {CreateValidation.class, UpdateValidation.class})
+        @NotNull(message = "Please provide correct price")
+        private BigDecimal price;
+
+        @NotBlank(message = "title cannot be blank", groups = CreateValidation.class)
+        private String title;
+
+        @NotEmpty(message = "author cannot be blank", groups = CreateValidation.class)
+        private Set<Long> authors;
+
+        @NotNull(message = "year cannot be null", groups = CreateValidation.class)
+        private Integer year;
+
+        @NotNull
+        @PositiveOrZero
+        private Long available;
+
+        CreateBookCommand toCreateCommand() {
+            return new CreateBookCommand(title, authors, year, price, available);
+        }
+
+        UpdateBookCommand toUpdateCommand(final Long id) {
+            return new UpdateBookCommand(id, title, authors, year, price, available);
+        }
+    }
 }

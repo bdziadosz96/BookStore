@@ -1,7 +1,7 @@
 package pl.bookstore.ebook.order.domain;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -34,7 +34,7 @@ import static javax.persistence.EnumType.STRING;
 public class Order extends BaseEntity {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "order_id")
-  private List<OrderItem> items;
+  private Set<OrderItem> items;
 
   @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
   private Recipient recipient;
