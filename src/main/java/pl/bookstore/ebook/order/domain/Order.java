@@ -49,7 +49,9 @@ public class Order extends BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public UpdateStatusResult updateStatus(final OrderStatus newStatus) {
-        status = status.update(newStatus);
+    public UpdateStatusResult updateStatus(OrderStatus newStatus) {
+        UpdateStatusResult result = status.update(newStatus);
+        status = result.getNewStatus();
+        return result;
     }
 }

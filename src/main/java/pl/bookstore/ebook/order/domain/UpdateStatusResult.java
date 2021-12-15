@@ -1,11 +1,17 @@
 package pl.bookstore.ebook.order.domain;
 
-record UpdateStatusResult(OrderStatus newStatus, boolean revoked) {
-    static UpdateStatusResult ok(final OrderStatus newStatus) {
+import lombok.Value;
+
+@Value
+public class UpdateStatusResult {
+    OrderStatus newStatus;
+    boolean revoked;
+
+    static UpdateStatusResult ok(OrderStatus newStatus) {
         return new UpdateStatusResult(newStatus, false);
     }
 
-    static UpdateStatusResult failure(final OrderStatus newStatus) {
+    static UpdateStatusResult failure(OrderStatus newStatus) {
         return new UpdateStatusResult(newStatus, true);
     }
 }

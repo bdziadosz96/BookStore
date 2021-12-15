@@ -7,35 +7,34 @@ import org.apache.commons.lang3.StringUtils;
 public enum OrderStatus {
     NEW {
         @Override
-        public OrderStatus update(final OrderStatus orderStatus) {
+        public UpdateStatusResult update(OrderStatus orderStatus) {
             return switch (orderStatus) {
-                case PAID -> PAID;
-                case CANCELED -> CANCELED;
-                case ABANDONED -> ABANDONED;
+                case PAID -> UpdateStatusResult.ok(OrderStatus.PAID);
+                case CANCELED, ABANDONED -> UpdateStatusResult.ok(OrderStatus.CANCELED);
                 default -> super.update(orderStatus);
             };
         }
     },
     PAID {
-      @Override
-      public OrderStatus update(final OrderStatus orderStatus) {
-          if (orderStatus == SHIPPED) {
-              return SHIPPED;
-          }
-          return super.update(orderStatus);
-      }
+        @Override
+        public UpdateStatusResult update(OrderStatus orderStatus) {
+            if (orderStatus == OrderStatus.SHIPPED) {
+                return UpdateStatusResult.ok(OrderStatus.SHIPPED);
+            }
+            return super.update(orderStatus);
+        }
     },
     CANCELED,
     ABANDONED,
     SHIPPED;
 
-    public static Optional<OrderStatus> checkString(final String value) {
-        return Arrays.stream(values())
+    public static Optional<OrderStatus> checkString(String value) {
+        return Arrays.stream(OrderStatus.values())
                 .filter(it -> StringUtils.equalsIgnoreCase(it.name(), value))
                 .findFirst();
     }
 
-    public OrderStatus update(final OrderStatus orderStatus) {
+    public UpdateStatusResult update(OrderStatus orderStatus) {
         throw new IllegalStateException("Status cannot be update from: " + name()
                 + " to: " + orderStatus);
     }

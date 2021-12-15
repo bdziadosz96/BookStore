@@ -24,32 +24,32 @@ class ManageOrderService implements ManageOrderUseCase {
     private final RecipientJpaRepository recipientRepository;
 
     @Override
-    public PlaceOrderResponse placeOrder(final PlaceOrderCommand command) {
-        final Set<OrderItem> items =
+    public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
+        Set<OrderItem> items =
                 command.getItems()
                         .stream()
                         .map(this::toOrderItem)
                         .collect(Collectors.toSet());
-        final Order order = Order
+        Order order = Order
                 .builder()
                 .items(items)
                 .recipient(getOrCreateRecipient(command.getRecipient()))
                 .build();
-        final Order save = orderRepository.save(order);
+        Order save = orderRepository.save(order);
         bookRepository.saveAll(reduceBooks(items));
         return PlaceOrderResponse.success(save.getId());
     }
 
-    private Recipient getOrCreateRecipient(final Recipient recipient) {
+    private Recipient getOrCreateRecipient(Recipient recipient) {
         return recipientRepository.findRecipientByEmailIgnoreCase(recipient.getEmail())
                 .orElse(recipient);
     }
 
 
-    private OrderItem toOrderItem(final OrderItemCommand command) {
-        final Book book = bookRepository.getById(command.getBookId());
-        final int quantity = command.getQuantity();
-        final Long available = book.getAvailable();
+    private OrderItem toOrderItem(OrderItemCommand command) {
+        Book book = bookRepository.getById(command.getBookId());
+        int quantity = command.getQuantity();
+        Long available = book.getAvailable();
         if (available >= quantity) {
             return new OrderItem(book, command.getQuantity());
         }
@@ -58,33 +58,35 @@ class ManageOrderService implements ManageOrderUseCase {
     }
 
     @Override
-    public void deleteOrderById(final Long id) {
+    public void deleteOrderById(Long id) {
         orderRepository.deleteById(id);
     }
 
     @Override
-    public void updateOrderStatus(final Long id, final OrderStatus status) {
+    public void updateOrderStatus(Long id, OrderStatus status) {
         orderRepository.findById(id)
                 .ifPresent(order -> {
-                    final var updateStatusResult = order.updateStatus(status);
-                    bookRepository.saveAll(revokeBooks(order.getItems()));
+                    var updateStatusResult = order.updateStatus(status);
+                    if (updateStatusResult.isRevoked()) {
+                        bookRepository.saveAll(revokeBooks(order.getItems()));
+                    }
                     orderRepository.save(order);
                 });
     }
 
-    private Set<Book> reduceBooks(final Set<OrderItem> items) {
+    private Set<Book> reduceBooks(Set<OrderItem> items) {
         return items.stream()
                 .map(item -> {
-                    final Book book = item.getBook();
+                    Book book = item.getBook();
                     book.setAvailable(book.getAvailable() - item.getQuantity());
                     return book;
                 }).collect(Collectors.toSet());
     }
 
-    private Set<Book> revokeBooks(final Set<OrderItem> items) {
+    private Set<Book> revokeBooks(Set<OrderItem> items) {
         return items.stream()
                 .map(item -> {
-                    final Book book = item.getBook();
+                    Book book = item.getBook();
                     book.setAvailable(book.getAvailable() + item.getQuantity());
                     return book;
                 }).collect(Collectors.toSet());
