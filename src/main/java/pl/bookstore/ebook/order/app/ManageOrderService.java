@@ -1,6 +1,5 @@
 package pl.bookstore.ebook.order.app;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -37,7 +36,7 @@ class ManageOrderService implements ManageOrderUseCase {
                 .recipient(getOrCreateRecipient(command.getRecipient()))
                 .build();
         final Order save = orderRepository.save(order);
-        bookRepository.saveAll(updateBooks(items));
+        bookRepository.saveAll(reduceBooks(items));
         return PlaceOrderResponse.success(save.getId());
     }
 
@@ -46,14 +45,6 @@ class ManageOrderService implements ManageOrderUseCase {
                 .orElse(recipient);
     }
 
-    private Set<Book> updateBooks(final Set<OrderItem> items) {
-        return items.stream()
-                .map(item -> {
-                    final Book book = item.getBook();
-                    book.setAvailable(book.getAvailable() - item.getQuantity());
-                    return book;
-                }).collect(Collectors.toSet());
-    }
 
     private OrderItem toOrderItem(final OrderItemCommand command) {
         final Book book = bookRepository.getById(command.getBookId());
@@ -73,13 +64,29 @@ class ManageOrderService implements ManageOrderUseCase {
 
     @Override
     public void updateOrderStatus(final Long id, final OrderStatus status) {
-        final Optional<Order> orderOptional = orderRepository.findById(id);
-        if (orderOptional.isPresent()) {
-            final Order order = orderOptional.get();
-            order.updateStatus(status);
-            orderRepository.save(order);
-        } else {
-            throw new IllegalStateException("Cannot find order with id: " + id);
-        }
+        orderRepository.findById(id)
+                .ifPresent(order -> {
+                    final var updateStatusResult = order.updateStatus(status);
+                    bookRepository.saveAll(revokeBooks(order.getItems()));
+                    orderRepository.save(order);
+                });
+    }
+
+    private Set<Book> reduceBooks(final Set<OrderItem> items) {
+        return items.stream()
+                .map(item -> {
+                    final Book book = item.getBook();
+                    book.setAvailable(book.getAvailable() - item.getQuantity());
+                    return book;
+                }).collect(Collectors.toSet());
+    }
+
+    private Set<Book> revokeBooks(final Set<OrderItem> items) {
+        return items.stream()
+                .map(item -> {
+                    final Book book = item.getBook();
+                    book.setAvailable(book.getAvailable() + item.getQuantity());
+                    return book;
+                }).collect(Collectors.toSet());
     }
 }

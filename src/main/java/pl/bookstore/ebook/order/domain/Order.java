@@ -32,22 +32,24 @@ import static javax.persistence.EnumType.STRING;
 @Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 public class Order extends BaseEntity {
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JoinColumn(name = "order_id")
-  private Set<OrderItem> items;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Set<OrderItem> items;
 
-  @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-  private Recipient recipient;
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private Recipient recipient;
 
-  @Builder.Default
-  @Enumerated(STRING)
-  private OrderStatus status = OrderStatus.NEW;
+    @Builder.Default
+    @Enumerated(STRING)
+    private OrderStatus status = OrderStatus.NEW;
 
-  @CreatedDate private LocalDateTime createdAt;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-  @LastModifiedDate private LocalDateTime updatedAt;
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
-  public void updateStatus(final OrderStatus newStatus) {
-    status = status.update(newStatus);
-  }
+    public UpdateStatusResult updateStatus(final OrderStatus newStatus) {
+        status = status.update(newStatus);
+    }
 }
