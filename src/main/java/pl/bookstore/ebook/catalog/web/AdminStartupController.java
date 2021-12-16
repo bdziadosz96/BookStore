@@ -3,6 +3,7 @@ package pl.bookstore.ebook.catalog.web;
 import java.math.BigDecimal;
 import java.util.Set;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderResponse;
 import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.domain.Recipient;
 
+@Slf4j
 @RequestMapping("/admin")
 @RestController
 @AllArgsConstructor
@@ -37,16 +39,16 @@ class AdminStartupController {
     }
 
     private void placeOrder() {
-        final Book effective_java =
+        Book effective_java =
                 catalog
                         .findOneByTitle("Effective Java")
                         .orElseThrow(() -> new IllegalStateException("Cannot find book!"));
-        final Book clean_code =
+        Book clean_code =
                 catalog
                         .findOneByTitle("Java - Clean Architecture")
                         .orElseThrow(() -> new IllegalStateException("Cannot find book!"));
 
-        final Recipient recipient =
+        Recipient recipient =
                 Recipient.builder()
                         .city("Warszawa")
                         .email("bdziadosz96@icloud.com")
@@ -56,38 +58,38 @@ class AdminStartupController {
                         .zipCode("00-000")
                         .build();
 
-        final PlaceOrderCommand command =
+        PlaceOrderCommand command =
                 PlaceOrderCommand.builder()
                         .recipient(recipient)
                         .item(new OrderItemCommand(effective_java.getId(), 16))
                         .item(new OrderItemCommand(clean_code.getId(), 7))
                         .build();
 
-        final PlaceOrderResponse response = manageOrder.placeOrder(command);
-        final String result = response.handle(
+        PlaceOrderResponse response = manageOrder.placeOrder(command);
+        String result = response.handle(
                 orderId -> "Created ORDER with id: " + orderId,
                 error -> "Failed to created order: " + error
         );
-        System.out.println(result);
+        AdminStartupController.log.info(result);
 
         queryOrder.findAll()
-                .forEach(order -> System.out.println("GET ORDER WITH TOTAL PRICE " + order.totalPrice()));
+                .forEach(order -> AdminStartupController.log.info("GET ORDER WITH TOTAL PRICE " + order.totalPrice()));
     }
 
     private void initData() {
-        final Author sampleOne = new Author("Joshua", "Bloch");
-        final Author sampleTwo = new Author("Uncle", "Bob");
+        Author sampleOne = new Author("Joshua", "Bloch");
+        Author sampleTwo = new Author("Uncle", "Bob");
         authorRepository.save(sampleOne);
         authorRepository.save(sampleTwo);
 
-        final CreateBookCommand effectiveJava =
+        CreateBookCommand effectiveJava =
                 new CreateBookCommand(
                         "Effective Java",
                         Set.of(sampleOne.getId()),
                         2005,
                         new BigDecimal("80.00"),
                         50L);
-        final CreateBookCommand cleanJava =
+        CreateBookCommand cleanJava =
                 new CreateBookCommand(
                         "Java - Clean Architecture",
                         Set.of(sampleOne.getId(), sampleTwo.getId()),
