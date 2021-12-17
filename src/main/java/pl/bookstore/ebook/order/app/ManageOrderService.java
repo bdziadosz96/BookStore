@@ -3,6 +3,7 @@ package pl.bookstore.ebook.order.app;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.bookstore.ebook.catalog.db.BookJpaRepository;
@@ -15,6 +16,7 @@ import pl.bookstore.ebook.order.domain.OrderItem;
 import pl.bookstore.ebook.order.domain.OrderStatus;
 import pl.bookstore.ebook.order.domain.Recipient;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 @Transactional
@@ -37,6 +39,7 @@ class ManageOrderService implements ManageOrderUseCase {
                 .build();
         Order save = orderRepository.save(order);
         bookRepository.saveAll(reduceBooks(items));
+        ManageOrderService.log.info("Placed order: " + save.getId());
         return PlaceOrderResponse.success(save.getId());
     }
 
@@ -59,6 +62,7 @@ class ManageOrderService implements ManageOrderUseCase {
 
     @Override
     public void deleteOrderById(Long id) {
+        ManageOrderService.log.info("Deleted order with id: " + id);
         orderRepository.deleteById(id);
     }
 
@@ -69,7 +73,9 @@ class ManageOrderService implements ManageOrderUseCase {
                     var updateStatusResult = order.updateStatus(status);
                     if (updateStatusResult.isRevoked()) {
                         bookRepository.saveAll(revokeBooks(order.getItems()));
+
                     }
+                    ManageOrderService.log.info("Updated order status " + status + " with id: " + order.getId());
                     orderRepository.save(order);
                 });
     }
