@@ -7,21 +7,29 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.bookstore.ebook.catalog.app.port.CatalogInitializerUseCase;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.db.AuthorJpaRepository;
+import pl.bookstore.ebook.catalog.domain.Author;
 import pl.bookstore.ebook.catalog.domain.Book;
+import pl.bookstore.ebook.jpa.BaseEntity;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
 import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.domain.Recipient;
+
+import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.*;
+import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.*;
 
 @Service
 @AllArgsConstructor
@@ -36,7 +44,7 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
     @Transactional
     public void load() {
         initData();
-        placeOrder();
+//        placeOrder();
     }
 
     private void initData() {
@@ -48,19 +56,33 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
                     .build();
             build.forEach(this::initBook);
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to parse CSV faile", e);
+            throw new IllegalStateException("Failed to parse CSV fail", e);
         }
     }
 
     private void initBook(CsvBook csvBook) {
-        new CatalogUseCase.CreateBookCommand(
+        Set<Long> authors = Arrays.stream(csvBook.authors.split(","))
+                .filter(StringUtils::isNotBlank)
+                .map(String::trim)
+                .map(this::getOrCreateAuthor)
+                .map(BaseEntity::getId)
+                .collect(Collectors.toSet());
+        CreateBookCommand command = new CreateBookCommand(
                 csvBook.title,
-                Set.of(),
+                authors,
                 csvBook.year,
                 csvBook.amount,
                 50L
         );
+        catalog.addBook(command);
     }
+
+    private Author getOrCreateAuthor(String name) {
+        return authorRepository
+                .findByNameIgnoreCase(name)
+                .orElseGet(() -> authorRepository.save(new Author(name)));
+    }
+
 
     private void placeOrder() {
         Book effective_java =
@@ -82,14 +104,14 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
                         .zipCode("00-000")
                         .build();
 
-        ManageOrderUseCase.PlaceOrderCommand command =
-                ManageOrderUseCase.PlaceOrderCommand.builder()
+        PlaceOrderCommand command =
+                PlaceOrderCommand.builder()
                         .recipient(recipient)
-                        .item(new ManageOrderUseCase.OrderItemCommand(effective_java.getId(), 16))
-                        .item(new ManageOrderUseCase.OrderItemCommand(clean_code.getId(), 7))
+                        .item(new OrderItemCommand(effective_java.getId(), 16))
+                        .item(new OrderItemCommand(clean_code.getId(), 7))
                         .build();
 
-        ManageOrderUseCase.PlaceOrderResponse response = manageOrder.placeOrder(command);
+        PlaceOrderResponse response = manageOrder.placeOrder(command);
         String result = response.handle(
                 orderId -> "Created ORDER with id: " + orderId,
                 error -> "Failed to created order: " + error

@@ -8,7 +8,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.ManyToMany;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,32 +20,31 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @Setter
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString(exclude = "books")
 @EntityListeners(AuditingEntityListener.class)
 public class Author extends BaseEntity {
-  private String firstname;
-  private String lastname;
-  @CreatedDate private LocalDateTime createdAt;
+    private String name;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-  @JsonIgnoreProperties("authors")
-  @ManyToMany(
-      mappedBy = "authors",
-      cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-  private Set<Book> books = new HashSet<>();
+    @JsonIgnoreProperties("authors")
+    @ManyToMany(
+            mappedBy = "authors",
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private Set<Book> books = new HashSet<>();
 
-  public Author(final String firstname, final String lastname) {
-    this.firstname = firstname;
-    this.lastname = lastname;
-  }
+    public Author(String firstname) {
+        this.name = firstname;
+    }
 
-  public void addBook(final Book book) {
-    books.add(book);
-    book.getAuthors().add(this);
-  }
 
-  public void removeBook(final Book book) {
-    books.remove(book);
-    book.getAuthors().remove(this);
-  }
+    public void addBook(final Book book) {
+        books.add(book);
+        book.getAuthors().add(this);
+    }
+
+    public void removeBook(final Book book) {
+        books.remove(book);
+        book.getAuthors().remove(this);
+    }
 }
