@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.JoinTable;
@@ -28,6 +29,7 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class Book extends BaseEntity {
+    @Column(unique = true)
     private String title;
     private Integer year;
     private BigDecimal price;
