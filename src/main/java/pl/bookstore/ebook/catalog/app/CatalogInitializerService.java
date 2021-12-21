@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -15,9 +16,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import pl.bookstore.ebook.catalog.app.port.CatalogInitializerUseCase;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.db.AuthorJpaRepository;
@@ -27,6 +34,7 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
 import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.domain.Recipient;
+import pl.bookstore.ebook.uploads.app.port.UploadUseCase;
 
 import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.*;
 import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.*;
@@ -39,12 +47,13 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
     private final ManageOrderUseCase manageOrder;
     private final QueryOrderUseCase queryOrder;
     private final AuthorJpaRepository authorRepository;
+    private final RestTemplate restTemplate;
 
     @Override
     @Transactional
     public void load() {
         initData();
-//        placeOrder();
+        placeOrder();
     }
 
     private void initData() {
@@ -74,7 +83,14 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
                 csvBook.amount,
                 50L
         );
-        catalog.addBook(command);
+        Book book = catalog.addBook(command);
+        catalog.updateBookCover(updateBookCoverCommand(book.getId(), csvBook.thumbnail));
+    }
+
+    private UpdateBookCoverCommand updateBookCoverCommand(Long bookId, String thumbnailUrl) {
+        ResponseEntity<byte[]> response = restTemplate.exchange(thumbnailUrl, HttpMethod.GET, null, byte[].class);
+        String contentType = Objects.requireNonNull(response.getHeaders().getContentType()).toString();
+        return new UpdateBookCoverCommand(bookId, response.getBody(), contentType, "cover");
     }
 
     private Author getOrCreateAuthor(String name) {
@@ -91,7 +107,7 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
                         .orElseThrow(() -> new IllegalStateException("Cannot find book!"));
         Book clean_code =
                 catalog
-                        .findOneByTitle("Java - Clean Architecture")
+                        .findOneByTitle("Refactoring")
                         .orElseThrow(() -> new IllegalStateException("Cannot find book!"));
 
         Recipient recipient =
@@ -136,6 +152,5 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
         private BigDecimal amount;
         @CsvBindByName
         private String thumbnail;
-
     }
 }
