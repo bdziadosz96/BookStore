@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.db.OrderJpaRepository;
 import pl.bookstore.ebook.order.domain.Order;
+import pl.bookstore.ebook.order.domain.OrderDto;
 
 @Service
 @AllArgsConstructor

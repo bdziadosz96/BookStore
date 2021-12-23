@@ -26,7 +26,8 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
-import static pl.bookstore.ebook.order.app.port.QueryOrderUseCase.OrderDto;
+
+import pl.bookstore.ebook.order.domain.OrderDto;
 
 @RestController
 @AllArgsConstructor
