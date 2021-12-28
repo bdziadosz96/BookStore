@@ -16,6 +16,8 @@ import pl.bookstore.ebook.order.domain.OrderItem;
 import pl.bookstore.ebook.order.domain.OrderStatus;
 import pl.bookstore.ebook.order.domain.Recipient;
 
+import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderResponse.*;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -40,7 +42,7 @@ class ManageOrderService implements ManageOrderUseCase {
         Order save = orderRepository.save(order);
         bookRepository.saveAll(reduceBooks(items));
         ManageOrderService.log.info("Placed order: " + save.getId());
-        return PlaceOrderResponse.success(save.getId());
+        return success(save.getId());
     }
 
     private Recipient getOrCreateRecipient(Recipient recipient) {

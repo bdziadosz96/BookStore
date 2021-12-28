@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.db.AuthorJpaRepository;
@@ -36,23 +35,8 @@ class CatalogControllerIT {
     @Test
     public void getAllBooks() {
         //given
-        Author joshua_bloch = authorJpaRepository.save(new Author("Joshua Bloch"));
-        Author steven_connor = authorJpaRepository.save(new Author("Steven Connor"));
-        catalogUseCase.addBook(new CreateBookCommand(
-                "Effective Java",
-                Set.of(joshua_bloch.getId()),
-                2005,
-                new BigDecimal("19.99"),
-                50L
-        ));
-
-        catalogUseCase.addBook(new CreateBookCommand(
-                "Java Puzzlers",
-                Set.of(steven_connor.getId()),
-                2010,
-                new BigDecimal("39.99"),
-                50L
-        ));
+        givenEffectiveJava();
+        givenJavaPuzzlers();
 
 
         //when
@@ -66,23 +50,8 @@ class CatalogControllerIT {
     @Test
     public void addBook_thenFindByTitle_thenReturnEqualTitleAndSize() {
         //given
-        Author joshua_bloch = authorJpaRepository.save(new Author("Joshua Bloch"));
-        Author steven_connor = authorJpaRepository.save(new Author("Steven Connor"));
-        catalogUseCase.addBook(new CreateBookCommand(
-                "Effective Java",
-                Set.of(joshua_bloch.getId()),
-                2005,
-                new BigDecimal("19.99"),
-                50L
-        ));
-
-        catalogUseCase.addBook(new CreateBookCommand(
-                "Java Puzzlers",
-                Set.of(steven_connor.getId()),
-                2010,
-                new BigDecimal("39.99"),
-                50L
-        ));
+        givenEffectiveJava();
+        givenJavaPuzzlers();
 
 
         //when
@@ -90,30 +59,15 @@ class CatalogControllerIT {
 
         //then
 
-        assertEquals(1,bloch.size());
-        assertEquals( "Effective Java",bloch.get(0).getTitle());
+        assertEquals(1, bloch.size());
+        assertEquals("Effective Java", bloch.get(0).getTitle());
     }
 
     @Test
     public void addBook_thenFindByAuthor_thenReturnEqualTitleAndSize() {
         //given
-        Author joshua_bloch = authorJpaRepository.save(new Author("Joshua Bloch"));
-        Author steven_connor = authorJpaRepository.save(new Author("Steven Connor"));
-        catalogUseCase.addBook(new CreateBookCommand(
-                "Effective Java",
-                Set.of(joshua_bloch.getId()),
-                2005,
-                new BigDecimal("19.99"),
-                50L
-        ));
-
-        catalogUseCase.addBook(new CreateBookCommand(
-                "Java Puzzlers",
-                Set.of(steven_connor.getId()),
-                2010,
-                new BigDecimal("39.99"),
-                50L
-        ));
+        givenEffectiveJava();
+        givenJavaPuzzlers();
 
 
         //when
@@ -124,5 +78,27 @@ class CatalogControllerIT {
         assertEquals(connor.size(), 1);
         assertEquals(connor.get(0).getTitle(), "Java Puzzlers");
         assertNotEquals(connor.get(0).getTitle(), "Effective Java");
+    }
+
+    private void givenJavaPuzzlers() {
+        Author steven_connor = authorJpaRepository.save(new Author("Steven Connor"));
+        catalogUseCase.addBook(new CreateBookCommand(
+                "Java Puzzlers",
+                Set.of(steven_connor.getId()),
+                2010,
+                new BigDecimal("39.99"),
+                50L
+        ));
+    }
+
+    private void givenEffectiveJava() {
+        Author joshua_bloch = authorJpaRepository.save(new Author("Joshua Bloch"));
+        catalogUseCase.addBook(new CreateBookCommand(
+                "Effective Java",
+                Set.of(joshua_bloch.getId()),
+                2005,
+                new BigDecimal("19.99"),
+                50L
+        ));
     }
 }
