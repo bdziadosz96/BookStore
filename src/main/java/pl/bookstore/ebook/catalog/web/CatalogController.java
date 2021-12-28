@@ -47,7 +47,7 @@ class CatalogController {
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    private List<Book> getAll(
+    public List<Book> getAll(
             @RequestParam final Optional<String> title, @RequestParam final Optional<String> author) {
         if (author.isPresent() && title.isPresent()) {
             return catalog.findByAuthorAndTitle(author.get(), title.get());
@@ -61,7 +61,7 @@ class CatalogController {
     }
 
     @GetMapping("/{id}")
-    private ResponseEntity<?> getById(@PathVariable final Long id) {
+    public ResponseEntity<?> getById(@PathVariable final Long id) {
         return catalog.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -119,7 +119,7 @@ class CatalogController {
     }
 
     @Data
-    private static class RestBookCommand {
+    public static class RestBookCommand {
         @DecimalMin(
                 value = "0.01",
                 message = "Price cannot be lower than 0.01",

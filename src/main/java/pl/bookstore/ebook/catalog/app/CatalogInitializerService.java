@@ -16,11 +16,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +31,12 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
 import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.domain.Recipient;
-import pl.bookstore.ebook.uploads.app.port.UploadUseCase;
 
-import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.*;
-import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.*;
+import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.CreateBookCommand;
+import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.UpdateBookCoverCommand;
+import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.OrderItemCommand;
+import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderCommand;
+import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderResponse;
 
 @Service
 @AllArgsConstructor

@@ -1,15 +1,12 @@
 package pl.bookstore.ebook.order.domain;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import pl.bookstore.ebook.catalog.domain.Book;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Set;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import pl.bookstore.ebook.catalog.domain.Book;
 
 class OrderDtoTest {
 
