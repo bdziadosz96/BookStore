@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import pl.bookstore.ebook.order.domain.OrderProperties;
 
-@EnableJpaAuditing
 @EnableScheduling
 @SpringBootApplication
 @EnableConfigurationProperties(OrderProperties.class)
