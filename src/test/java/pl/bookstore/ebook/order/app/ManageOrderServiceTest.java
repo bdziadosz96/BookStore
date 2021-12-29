@@ -1,7 +1,7 @@
 package pl.bookstore.ebook.order.app;
 
 import java.math.BigDecimal;
-import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -29,7 +29,7 @@ class ManageOrderServiceTest {
     BookJpaRepository bookJpaRepository;
 
     @Test
-    void placeOrder() {
+    public void placeOrder_thenReturnOk() {
         //given
         Book effectiveJava = givenEffectiveJava();
         Book javaPuzzlers = givenJavaPuzzlers();
@@ -38,13 +38,32 @@ class ManageOrderServiceTest {
                 .item(new OrderItemCommand(effectiveJava.getId(), 10))
                 .item(new OrderItemCommand(javaPuzzlers.getId(), 15))
                 .build();
+
         //when
         PlaceOrderResponse response = service.placeOrder(command);
+
         //then
         assertTrue(response.isSuccess());
     }
 
-    @NotNull
+    @Test
+    public void placeOrderBooksNotAvailable_thenThrowException() {
+        //given
+        Book effectiveJava = givenEffectiveJava();
+        PlaceOrderCommand command = PlaceOrderCommand.builder()
+                .recipient(givenRecipent())
+                .item(new OrderItemCommand(effectiveJava.getId(), 60))
+                .build();
+
+        //when
+        IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class,
+                () -> service.placeOrder(command));
+
+        //then
+        assertTrue(exception.getMessage().contains("Request copies of book "));
+    }
+
+
     private Recipient givenRecipent() {
         return Recipient.builder()
                 .name("Jan")
