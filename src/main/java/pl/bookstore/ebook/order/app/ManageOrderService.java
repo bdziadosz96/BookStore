@@ -75,7 +75,6 @@ class ManageOrderService implements ManageOrderUseCase {
                     var updateStatusResult = order.updateStatus(status);
                     if (updateStatusResult.isRevoked()) {
                         bookRepository.saveAll(revokeBooks(order.getItems()));
-
                     }
                     ManageOrderService.log.info("Updated order status " + status + " with id: " + order.getId());
                     orderRepository.save(order);

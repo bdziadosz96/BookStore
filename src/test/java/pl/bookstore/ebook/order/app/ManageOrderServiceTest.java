@@ -4,29 +4,43 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.db.AuthorJpaRepository;
 import pl.bookstore.ebook.catalog.db.BookJpaRepository;
 import pl.bookstore.ebook.catalog.domain.Book;
+import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
+import pl.bookstore.ebook.order.domain.OrderDto;
+import pl.bookstore.ebook.order.domain.OrderStatus;
 import pl.bookstore.ebook.order.domain.Recipient;
 
+import javax.transaction.Transactional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.OrderItemCommand;
 import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderCommand;
 import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderResponse;
 
-@DataJpaTest
-@Import({ManageOrderService.class})
+@SpringBootTest
+@AutoConfigureTestDatabase
+@Transactional
 class ManageOrderServiceTest {
     @Autowired
-    ManageOrderService service;
+    ManageOrderService manageOrderService;
+
+    @Autowired
+    QueryOrderUseCase queryOrderService;
 
     @Autowired
     AuthorJpaRepository authorJpaRepository;
 
     @Autowired
     BookJpaRepository bookJpaRepository;
+
+    @Autowired
+    CatalogUseCase catalogUseCase;
 
     @Test
     public void placeOrder_thenReturnOk() {
@@ -40,11 +54,13 @@ class ManageOrderServiceTest {
                 .build();
 
         //when
-        PlaceOrderResponse response = service.placeOrder(command);
+        PlaceOrderResponse response = manageOrderService.placeOrder(command);
 
         //then
         assertTrue(response.isSuccess());
     }
+
+
 
     @Test
     public void placeOrderBooksNotAvailable_thenThrowException() {
@@ -57,10 +73,65 @@ class ManageOrderServiceTest {
 
         //when
         IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class,
-                () -> service.placeOrder(command));
+                () -> manageOrderService.placeOrder(command));
 
         //then
         assertTrue(exception.getMessage().contains("Request copies of book "));
+    }
+
+    @Test
+    public void placeOrder_AvailableBooksChange_thenReturnOk() {
+        //given
+        Book effectiveJava = givenEffectiveJava();
+        Book javaPuzzlers = givenJavaPuzzlers();
+        PlaceOrderCommand command = PlaceOrderCommand.builder()
+                .recipient(givenRecipent())
+                .item(new OrderItemCommand(effectiveJava.getId(), 10))
+                .item(new OrderItemCommand(javaPuzzlers.getId(), 15))
+                .build();
+
+        PlaceOrderResponse response = manageOrderService.placeOrder(command);
+        Book reducedEffectiveJava = catalogUseCase.findById(effectiveJava.getId()).get();
+        Book reducedJavaPuzzlers = catalogUseCase.findById(javaPuzzlers.getId()).get();
+
+        //then
+        assertTrue(response.isSuccess());
+        assertEquals(40,reducedEffectiveJava.getAvailable());
+        assertEquals(35,reducedJavaPuzzlers.getAvailable());
+    }
+
+    @Test
+    public void revokeOrder_thenReturnNumberOfAvailableBooksAndCancelledStatus() {
+        //given
+        Book effectiveJava = givenEffectiveJava();
+        Book javaPuzzlers = givenJavaPuzzlers();
+        Long orderId = placeOrder(effectiveJava, javaPuzzlers);
+
+        Book reducedEffectiveJava = catalogUseCase.findById(effectiveJava.getId()).get();
+        Book reducedJavaPuzzlers = catalogUseCase.findById(javaPuzzlers.getId()).get();
+        assertEquals(40,reducedEffectiveJava.getAvailable());
+        assertEquals(35,reducedJavaPuzzlers.getAvailable());
+
+        //when
+
+        manageOrderService.updateOrderStatus(orderId, OrderStatus.CANCELED);
+
+        //then
+        OrderDto updatedOrder = queryOrderService.findById(orderId).get();
+        assertEquals(OrderStatus.CANCELED, updatedOrder.getStatus());
+        assertEquals(50,reducedEffectiveJava.getAvailable());
+        assertEquals(50,reducedJavaPuzzlers.getAvailable());
+
+
+    }
+
+    private Long placeOrder(Book effectiveJava, Book javaPuzzlers) {
+        PlaceOrderCommand command = PlaceOrderCommand.builder()
+                .recipient(givenRecipent())
+                .item(new OrderItemCommand(effectiveJava.getId(), 10))
+                .item(new OrderItemCommand(javaPuzzlers.getId(), 15))
+                .build();
+        return manageOrderService.placeOrder(command).getRight();
     }
 
 
