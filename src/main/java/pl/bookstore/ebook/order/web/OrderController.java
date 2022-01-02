@@ -63,16 +63,20 @@ class OrderController {
     }
 
     @PutMapping("/{id}/status")
-    @ResponseStatus(ACCEPTED)
-    public void updateOrderStatus(
+    public ResponseEntity<?> updateOrderStatus(
             @PathVariable final Long id, @RequestBody final Map<String, String> body) {
         String status = body.get("status");
         final OrderStatus orderStatus =
                 OrderStatus.checkString(status)
                         .orElseThrow(
                                 () -> new ResponseStatusException(BAD_REQUEST, "Unkown status: " + status));
-        UpdateOrderStatusCommand command = new UpdateOrderStatusCommand(id, orderStatus, null);
-        manageOrder.updateOrderStatus(command);
+        UpdateOrderStatusCommand command = new UpdateOrderStatusCommand(id, orderStatus, "admin@admin.pl");
+        return manageOrder
+                .updateOrderStatus(command)
+                .handle(
+                        orderId -> ResponseEntity.created(orderUri(id)).build(),
+                        error -> ResponseEntity.badRequest().body(error));
+
     }
 
     @DeleteMapping("/{id}")
