@@ -3,8 +3,8 @@ package pl.bookstore.ebook.order.app;
 import java.math.BigDecimal;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.OrderItemCommand;
 import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderCommand;
 import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderResponse;
+import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.UpdateOrderStatusCommand;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -45,7 +46,7 @@ class ManageOrderServiceTest {
         Book effectiveJava = givenEffectiveJava();
         Book javaPuzzlers = givenJavaPuzzlers();
         PlaceOrderCommand command = PlaceOrderCommand.builder()
-                .recipient(givenRecipent())
+                .recipient(recipient())
                 .item(new OrderItemCommand(effectiveJava.getId(), 10))
                 .item(new OrderItemCommand(javaPuzzlers.getId(), 15))
                 .build();
@@ -63,7 +64,7 @@ class ManageOrderServiceTest {
         //given
         Book effectiveJava = givenEffectiveJava();
         PlaceOrderCommand command = PlaceOrderCommand.builder()
-                .recipient(givenRecipent())
+                .recipient(recipient())
                 .item(new OrderItemCommand(effectiveJava.getId(), 60))
                 .build();
 
@@ -81,7 +82,7 @@ class ManageOrderServiceTest {
         Book effectiveJava = givenEffectiveJava();
         Book javaPuzzlers = givenJavaPuzzlers();
         PlaceOrderCommand command = PlaceOrderCommand.builder()
-                .recipient(givenRecipent())
+                .recipient(recipient())
                 .item(new OrderItemCommand(effectiveJava.getId(), 10))
                 .item(new OrderItemCommand(javaPuzzlers.getId(), 15))
                 .build();
@@ -101,7 +102,7 @@ class ManageOrderServiceTest {
         //given
         Book effectiveJava = givenEffectiveJava();
         Book javaPuzzlers = givenJavaPuzzlers();
-        Long orderId = placeOrder(effectiveJava, javaPuzzlers);
+        Long orderId = placeOrder(effectiveJava, javaPuzzlers, "admin@admin.pl");
 
         Book reducedEffectiveJava = catalogUseCase.findById(effectiveJava.getId()).get();
         Book reducedJavaPuzzlers = catalogUseCase.findById(javaPuzzlers.getId()).get();
@@ -110,7 +111,7 @@ class ManageOrderServiceTest {
 
         //when
 
-        manageOrderService.updateOrderStatus(orderId, OrderStatus.CANCELED);
+        manageOrderService.updateOrderStatus(updateStatusTo(orderId,OrderStatus.CANCELED));
 
         //then
         OrderDto updatedOrder = queryOrderService.findById(orderId).get();
@@ -127,11 +128,11 @@ class ManageOrderServiceTest {
         Book effectiveJava = givenEffectiveJava();
         Book javaPuzzlers = givenJavaPuzzlers();
         Long orderId = placeOrder(effectiveJava, javaPuzzlers);
-        manageOrderService.updateOrderStatus(orderId, OrderStatus.PAID);
+        manageOrderService.updateOrderStatus(updateStatusTo(orderId, OrderStatus.PAID));
 
         //when
         IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class,
-                () -> manageOrderService.updateOrderStatus(orderId, OrderStatus.CANCELED));
+                () -> manageOrderService.updateOrderStatus(updateStatusTo(orderId,OrderStatus.CANCELED)));
 
         //then
         assertTrue(ex.getMessage().contains("Status cannot be update from: " + OrderStatus.PAID
@@ -143,16 +144,25 @@ class ManageOrderServiceTest {
         Book effectiveJava = givenEffectiveJava();
         Book javaPuzzlers = givenJavaPuzzlers();
         Long orderId = placeOrder(effectiveJava, javaPuzzlers);
-        manageOrderService.updateOrderStatus(orderId, OrderStatus.PAID);
-        manageOrderService.updateOrderStatus(orderId, OrderStatus.SHIPPED);
+        UpdateOrderStatusCommand commandPaid = updateStatusTo(orderId,OrderStatus.PAID);
+        manageOrderService.updateOrderStatus(commandPaid);
+
+        UpdateOrderStatusCommand commandShipped = updateStatusTo(orderId,OrderStatus.SHIPPED);
+        manageOrderService.updateOrderStatus(commandShipped);
 
         //when
+        UpdateOrderStatusCommand commandCancel = updateStatusTo(orderId,OrderStatus.CANCELED);
         IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class,
-                () -> manageOrderService.updateOrderStatus(orderId, OrderStatus.CANCELED));
+                () -> manageOrderService.updateOrderStatus(commandCancel));
 
         //then
         assertTrue(ex.getMessage().contains("Status cannot be update from: " + OrderStatus.SHIPPED
                 + " to: " + OrderStatus.CANCELED));
+    }
+
+    @NotNull
+    private UpdateOrderStatusCommand updateStatusTo(Long orderId,OrderStatus orderStatus) {
+        return new UpdateOrderStatusCommand(orderId,orderStatus,null);
     }
 
 
@@ -161,7 +171,7 @@ class ManageOrderServiceTest {
         //given
         PlaceOrderCommand command = PlaceOrderCommand.builder()
                 .item(new OrderItemCommand(200L, 10))
-                .recipient(givenRecipent())
+                .recipient(recipient())
                 .build();
 
         //when
@@ -178,7 +188,7 @@ class ManageOrderServiceTest {
         Book effectiveJava = givenEffectiveJava();
         int negativeQuantity = -10;
         PlaceOrderCommand command = PlaceOrderCommand.builder()
-                .recipient(givenRecipent())
+                .recipient(recipient())
                 .item(new OrderItemCommand(effectiveJava.getId(), negativeQuantity))
                 .build();
         //when
@@ -190,17 +200,68 @@ class ManageOrderServiceTest {
                 " requested " + negativeQuantity + " of " + effectiveJava.getAvailable()));
     }
 
-    private Long placeOrder(Book effectiveJava, Book javaPuzzlers) {
+
+    @Test
+    public void placeOrderCannotBeCancelByOtherUser_thenThrowException() {
+        Book effectiveJava = givenEffectiveJava();
+        String joe = "johndoe@example.com";
+        Long orderId = placeOrder(effectiveJava,joe);
+        assertEquals(40L, availableCopiesOf(effectiveJava));
+
+        //when
+        UpdateOrderStatusCommand command = new UpdateOrderStatusCommand(orderId,OrderStatus.CANCELED,"example@ex.com");
+        manageOrderService.updateOrderStatus(command);
+
+        //then
+        assertEquals(40L, availableCopiesOf(effectiveJava));
+        assertEquals(OrderStatus.NEW, queryOrderService.findById(orderId).get().getStatus());
+    }
+
+    private long availableCopiesOf(Book effectiveJava) {
+        return bookJpaRepository.findById(effectiveJava.getId()).get().getAvailable();
+    }
+
+
+    private Long placeOrder(Book effectiveJava, Book javaPuzzlers, String email) {
         PlaceOrderCommand command = PlaceOrderCommand.builder()
-                .recipient(givenRecipent())
+                .recipient(recipient(email))
                 .item(new OrderItemCommand(effectiveJava.getId(), 10))
                 .item(new OrderItemCommand(javaPuzzlers.getId(), 15))
                 .build();
         return manageOrderService.placeOrder(command).getRight();
     }
 
+    private Long placeOrder(Book effectiveJava, Book javaPuzzlers) {
+        PlaceOrderCommand command = PlaceOrderCommand.builder()
+                .recipient(recipient())
+                .item(new OrderItemCommand(effectiveJava.getId(), 10))
+                .item(new OrderItemCommand(javaPuzzlers.getId(), 15))
+                .build();
+        return manageOrderService.placeOrder(command).getRight();
+    }
 
-    private Recipient givenRecipent() {
+    private Long placeOrder(Book book) {
+        PlaceOrderCommand command = PlaceOrderCommand.builder()
+                .recipient(recipient())
+                .item(new OrderItemCommand(book.getId(), 10))
+                .build();
+        return manageOrderService.placeOrder(command).getRight();
+    }
+
+    private Long placeOrder(Book book, String email) {
+        PlaceOrderCommand command = PlaceOrderCommand.builder()
+                .recipient(recipient(email))
+                .item(new OrderItemCommand(book.getId(), 10))
+                .build();
+        return manageOrderService.placeOrder(command).getRight();
+    }
+
+    private Recipient recipient(String mail) {
+        return Recipient.builder().email(mail).build();
+    }
+
+
+    private Recipient recipient() {
         return Recipient.builder()
                 .name("Jan")
                 .city("Warszawa")

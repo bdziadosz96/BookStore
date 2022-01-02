@@ -2,6 +2,7 @@ package pl.bookstore.ebook.order.web;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
+import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.*;
 
 import pl.bookstore.ebook.order.domain.OrderDto;
 
@@ -63,12 +65,14 @@ class OrderController {
     @PutMapping("/{id}/status")
     @ResponseStatus(ACCEPTED)
     public void updateOrderStatus(
-            @PathVariable final Long id, @RequestBody final UpdateStatusCommand command) {
+            @PathVariable final Long id, @RequestBody final Map<String, String> body) {
+        String status = body.get("status");
         final OrderStatus orderStatus =
-                OrderStatus.checkString(command.status)
+                OrderStatus.checkString(status)
                         .orElseThrow(
-                                () -> new ResponseStatusException(BAD_REQUEST, "Unkown status: " + command.status));
-        manageOrder.updateOrderStatus(id, orderStatus);
+                                () -> new ResponseStatusException(BAD_REQUEST, "Unkown status: " + status));
+        UpdateOrderStatusCommand command = new UpdateOrderStatusCommand(id, orderStatus, null);
+        manageOrder.updateOrderStatus(command);
     }
 
     @DeleteMapping("/{id}")
@@ -79,10 +83,5 @@ class OrderController {
 
     private URI orderUri(final Long orderId) {
         return new CreatedURI("/" + orderId).uri();
-    }
-
-    @Data
-    static class UpdateStatusCommand {
-        String status;
     }
 }

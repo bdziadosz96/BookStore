@@ -71,16 +71,27 @@ class ManageOrderService implements ManageOrderUseCase {
     }
 
     @Override
-    public void updateOrderStatus(Long id, OrderStatus status) {
-        orderRepository.findById(id)
-                .ifPresent(order -> {
-                    var updateStatusResult = order.updateStatus(status);
+    public UpdateStatusResponse updateOrderStatus(UpdateOrderStatusCommand command) {
+        return orderRepository
+                .findById(command.getOrderId())
+                .map(order -> {
+                    if (!hasAccess(command, order)) {
+                        return UpdateStatusResponse.failure("Unauthorized");
+                    }
+                    var updateStatusResult = order.updateStatus(command.getStatus());
                     if (updateStatusResult.isRevoked()) {
                         bookRepository.saveAll(revokeBooks(order.getItems()));
                     }
-                    ManageOrderService.log.info("Updated order status " + status + " with id: " + order.getId());
+                    ManageOrderService.log.info("Updated order status " + command.getStatus() + " with id: " + order.getId());
                     orderRepository.save(order);
-                });
+                    return UpdateStatusResponse.success(order.getStatus());
+                })
+                .orElse(UpdateStatusResponse.failure("Order not found"));
+    }
+
+    private boolean hasAccess(UpdateOrderStatusCommand command, Order order) {
+        return command.getEmail().equalsIgnoreCase(order.getRecipient().getEmail())
+                || command.getEmail().equalsIgnoreCase("admin@admin.pl");
     }
 
     private Set<Book> reduceBooks(Set<OrderItem> items) {
