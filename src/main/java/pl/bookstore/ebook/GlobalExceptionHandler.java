@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -31,6 +32,11 @@ class GlobalExceptionHandler {
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<?> handleMessageNotReadable(final HttpMessageNotReadableException e) {
+    return handleErrors(HttpStatus.BAD_REQUEST, Collections.singletonList(e.getMessage()));
+  }
+
+  @ExceptionHandler(EntityNotFoundException.class)
+  public ResponseEntity<?> handleEntityNotFoundException(final EntityNotFoundException e) {
     return handleErrors(HttpStatus.BAD_REQUEST, Collections.singletonList(e.getMessage()));
   }
 

@@ -2,6 +2,7 @@ package pl.bookstore.ebook.order.app;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,10 +53,11 @@ class ManageOrderService implements ManageOrderUseCase {
 
 
     private OrderItem toOrderItem(OrderItemCommand command) {
-        Book book = bookRepository.getById(command.getBookId());
+        Book book = bookRepository.findById(command.getBookId())
+                .orElseThrow(() -> new EntityNotFoundException("Cannot find books with given id: " + command.getBookId()));
         int quantity = command.getQuantity();
         Long available = book.getAvailable();
-        if (available >= quantity) {
+        if (available >= quantity && quantity > 0) {
             return new OrderItem(book, command.getQuantity());
         }
         throw new IllegalStateException("Request copies of book " + book.getId() +

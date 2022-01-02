@@ -33,7 +33,7 @@ public enum OrderStatus {
                 .filter(it -> StringUtils.equalsIgnoreCase(it.name(), value))
                 .findFirst();
     }
-        //test
+
     public UpdateStatusResult update(OrderStatus orderStatus) {
         throw new IllegalStateException("Status cannot be update from: " + name()
                 + " to: " + orderStatus);
