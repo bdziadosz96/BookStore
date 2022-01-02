@@ -111,7 +111,7 @@ class ManageOrderServiceTest {
 
         //when
 
-        manageOrderService.updateOrderStatus(updateStatusTo(orderId,OrderStatus.CANCELED,"admin@admin.pl"));
+        manageOrderService.updateOrderStatus(updateStatusTo(orderId, OrderStatus.CANCELED, "admin@admin.pl"));
 
         //then
         OrderDto updatedOrder = queryOrderService.findById(orderId).get();
@@ -128,11 +128,11 @@ class ManageOrderServiceTest {
         Book effectiveJava = givenEffectiveJava();
         Book javaPuzzlers = givenJavaPuzzlers();
         Long orderId = placeOrder(effectiveJava, javaPuzzlers);
-        manageOrderService.updateOrderStatus(updateStatusTo(orderId, OrderStatus.PAID,"admin@admin.pl"));
+        manageOrderService.updateOrderStatus(updateStatusTo(orderId, OrderStatus.PAID, "admin@admin.pl"));
 
         //when
         IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class,
-                () -> manageOrderService.updateOrderStatus(updateStatusTo(orderId,OrderStatus.CANCELED,"admin@admin.pl")));
+                () -> manageOrderService.updateOrderStatus(updateStatusTo(orderId, OrderStatus.CANCELED, "admin@admin.pl")));
 
         //then
         assertTrue(ex.getMessage().contains("Status cannot be update from: " + OrderStatus.PAID
@@ -144,14 +144,14 @@ class ManageOrderServiceTest {
         Book effectiveJava = givenEffectiveJava();
         Book javaPuzzlers = givenJavaPuzzlers();
         Long orderId = placeOrder(effectiveJava, javaPuzzlers);
-        UpdateOrderStatusCommand commandPaid = updateStatusTo(orderId,OrderStatus.PAID,"admin@admin.pl");
+        UpdateOrderStatusCommand commandPaid = updateStatusTo(orderId, OrderStatus.PAID, "admin@admin.pl");
         manageOrderService.updateOrderStatus(commandPaid);
 
-        UpdateOrderStatusCommand commandShipped = updateStatusTo(orderId,OrderStatus.SHIPPED,"admin@admin.pl");
+        UpdateOrderStatusCommand commandShipped = updateStatusTo(orderId, OrderStatus.SHIPPED, "admin@admin.pl");
         manageOrderService.updateOrderStatus(commandShipped);
 
         //when
-        UpdateOrderStatusCommand commandCancel = updateStatusTo(orderId,OrderStatus.CANCELED,"admin@admin.pl");
+        UpdateOrderStatusCommand commandCancel = updateStatusTo(orderId, OrderStatus.CANCELED, "admin@admin.pl");
         IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class,
                 () -> manageOrderService.updateOrderStatus(commandCancel));
 
@@ -160,13 +160,46 @@ class ManageOrderServiceTest {
                 + " to: " + OrderStatus.CANCELED));
     }
 
-    @NotNull
-    private UpdateOrderStatusCommand updateStatusTo(Long orderId,OrderStatus orderStatus) {
-        return new UpdateOrderStatusCommand(orderId,orderStatus,null);
+    @Test
+    public void placeOrderWithShippedStatus_AdminCanRevokeOrder_thenThrowException() {
+        Book effectiveJava = givenEffectiveJava();
+        String user = "user@example.com";
+        Long orderId = placeOrder(effectiveJava, user);
+
+        //when
+        String admin = "admin@admin.pl";
+        UpdateOrderStatusCommand commandCancel = updateStatusTo(orderId, OrderStatus.CANCELED, admin);
+        manageOrderService.updateOrderStatus(commandCancel);
+
+        //then
+        assertEquals(50L, availableCopiesOf(effectiveJava));
+        assertEquals(OrderStatus.CANCELED, queryOrderService.findById(orderId).get().getStatus());
     }
+
+    @Test
+    public void placeOrder_AdminChangeStatus_thenAvailabableBooksCorrect() {
+        //given
+        Book effectiveJava = givenEffectiveJava();
+        Long orderId = placeOrder(effectiveJava);
+        assertEquals(40L, availableCopiesOf(effectiveJava));
+
+        //when
+        String admin = "admin@admin.pl";
+        updateStatusTo(orderId, OrderStatus.PAID, admin);
+
+        //then
+        assertEquals(40L, availableCopiesOf(effectiveJava));
+    }
+
+
     @NotNull
-    private UpdateOrderStatusCommand updateStatusTo(Long orderId,OrderStatus orderStatus,String email) {
-        return new UpdateOrderStatusCommand(orderId,orderStatus,email);
+    private UpdateOrderStatusCommand updateStatusTo(Long orderId, OrderStatus orderStatus) {
+        return new UpdateOrderStatusCommand(orderId, orderStatus, null);
+    }
+
+    @NotNull
+    private UpdateOrderStatusCommand updateStatusTo(Long orderId, OrderStatus orderStatus, String email) {
+        return new UpdateOrderStatusCommand(orderId, orderStatus, email);
     }
 
 
@@ -209,11 +242,11 @@ class ManageOrderServiceTest {
     public void placeOrderCannotBeCancelByOtherUser_thenThrowException() {
         Book effectiveJava = givenEffectiveJava();
         String joe = "johndoe@example.com";
-        Long orderId = placeOrder(effectiveJava,joe);
+        Long orderId = placeOrder(effectiveJava, joe);
         assertEquals(40L, availableCopiesOf(effectiveJava));
 
         //when
-        UpdateOrderStatusCommand command = new UpdateOrderStatusCommand(orderId,OrderStatus.CANCELED,"example@ex.com");
+        UpdateOrderStatusCommand command = new UpdateOrderStatusCommand(orderId, OrderStatus.CANCELED, "example@ex.com");
         manageOrderService.updateOrderStatus(command);
 
         //then
