@@ -11,7 +11,7 @@ import pl.bookstore.ebook.catalog.domain.Book;
 class OrderDtoTest {
 
     @Test
-    public void givenEmptyOrderDto_whenCalculateTotalPrice_thenReturnOk(){
+    public void givenEmptyOrderDtoWhenCalculateTotalPrice_thenReturnOk(){
         //given
         OrderDto orderDto = new OrderDto(
                 1L,
@@ -28,7 +28,7 @@ class OrderDtoTest {
     }
 
     @Test
-    public void givenNotEmptyOrderDto_whenCalculateTotalPrice_thenReturnNotEquals(){
+    public void givenNotEmptyOrderDtoCalculateTotalPrice_thenReturnNotEquals(){
         //given
         Book book = new Book("Test",2000,BigDecimal.TEN,5L);
         OrderItem orderItem = new OrderItem(book,5);

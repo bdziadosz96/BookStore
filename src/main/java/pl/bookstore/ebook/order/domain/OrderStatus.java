@@ -10,7 +10,8 @@ public enum OrderStatus {
         public UpdateStatusResult update(OrderStatus orderStatus) {
             return switch (orderStatus) {
                 case PAID -> UpdateStatusResult.ok(OrderStatus.PAID);
-                case CANCELED, ABANDONED -> UpdateStatusResult.failure(OrderStatus.CANCELED);
+                case CANCELED -> UpdateStatusResult.failure(OrderStatus.CANCELED);
+                case ABANDONED -> UpdateStatusResult.failure(OrderStatus.ABANDONED);
                 default -> super.update(orderStatus);
             };
         }

@@ -12,6 +12,7 @@ import pl.bookstore.ebook.order.domain.OrderDto;
 
 @Service
 @AllArgsConstructor
+public
 class QueryOrderService implements QueryOrderUseCase {
     private final OrderJpaRepository repository;
 

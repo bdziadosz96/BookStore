@@ -23,6 +23,7 @@ import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderRes
 @Service
 @AllArgsConstructor
 @Transactional
+public
 class ManageOrderService implements ManageOrderUseCase {
     private final OrderJpaRepository orderRepository;
     private final BookJpaRepository bookRepository;
