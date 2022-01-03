@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 import pl.bookstore.ebook.commons.Either;
+import pl.bookstore.ebook.order.domain.Delivery;
 import pl.bookstore.ebook.order.domain.OrderStatus;
 import pl.bookstore.ebook.order.domain.Recipient;
 
@@ -23,6 +24,7 @@ public interface ManageOrderUseCase {
         @Singular
         List<OrderItemCommand> items;
         Recipient recipient;
+        Delivery delivery;
     }
 
     @Value

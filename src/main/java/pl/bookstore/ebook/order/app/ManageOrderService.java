@@ -40,6 +40,7 @@ class ManageOrderService implements ManageOrderUseCase {
                 .builder()
                 .items(items)
                 .recipient(getOrCreateRecipient(command.getRecipient()))
+                .delivery(command.getDelivery())
                 .build();
         Order save = orderRepository.save(order);
         bookRepository.saveAll(reduceBooks(items));

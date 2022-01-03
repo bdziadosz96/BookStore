@@ -46,6 +46,10 @@ public class Order extends BaseEntity {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    @Builder.Default
+    @Enumerated(STRING)
+    private Delivery delivery = Delivery.COURIER;
+
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
