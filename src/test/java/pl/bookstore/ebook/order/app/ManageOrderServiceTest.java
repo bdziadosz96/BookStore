@@ -77,7 +77,7 @@ class ManageOrderServiceTest {
     }
 
     @Test
-    public void placeOrder_AvailableBooksChange_thenReturnOk() {
+    public void placeOrderAvailableBooksChange_thenReturnOk() {
         //given
         Book effectiveJava = givenEffectiveJava();
         Book javaPuzzlers = givenJavaPuzzlers();
@@ -123,7 +123,7 @@ class ManageOrderServiceTest {
     }
 
     @Test
-    public void placeOrderWithPaidStatus_CannotRevokeOrder_thenThrowException() {
+    public void placeOrderWithPaidStatusCannotRevokeOrder_thenThrowException() {
         //given
         Book effectiveJava = givenEffectiveJava();
         Book javaPuzzlers = givenJavaPuzzlers();
@@ -140,7 +140,7 @@ class ManageOrderServiceTest {
     }
 
     @Test
-    public void placeOrderWithShippedStatus_CannotRevokeOrder_thenThrowException() {
+    public void placeOrderWithShippedStatusCannotRevokeOrder_thenThrowException() {
         Book effectiveJava = givenEffectiveJava();
         Book javaPuzzlers = givenJavaPuzzlers();
         Long orderId = placeOrder(effectiveJava, javaPuzzlers);
@@ -161,7 +161,7 @@ class ManageOrderServiceTest {
     }
 
     @Test
-    public void placeOrderWithShippedStatus_AdminCanRevokeOrder_thenThrowException() {
+    public void placeOrderWithShippedStatusAdminCanRevokeOrder_thenThrowException() {
         Book effectiveJava = givenEffectiveJava();
         String user = "user@example.com";
         Long orderId = placeOrder(effectiveJava, user);
@@ -177,7 +177,7 @@ class ManageOrderServiceTest {
     }
 
     @Test
-    public void placeOrder_AdminChangeStatus_thenAvailabableBooksCorrect() {
+    public void placeOrderAdminChangeStatus_thenAvailableBooksCorrect() {
         //given
         Book effectiveJava = givenEffectiveJava();
         Long orderId = placeOrder(effectiveJava);

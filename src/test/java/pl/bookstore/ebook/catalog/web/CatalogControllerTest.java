@@ -45,7 +45,7 @@ class CatalogControllerTest {
     }
 
     @Test
-    public void addBook_thenFindByTitle_thenReturnEqualTitleAndSize() {
+    public void addBookAndFindByTitleShouldReturnProperBook() {
         //given
         Author author = givenAuthor();
         Book effectiveJava = givenEffectiveJava();
@@ -63,7 +63,7 @@ class CatalogControllerTest {
     }
 
     @Test
-    public void addBook_thenFindByAuthor_thenReturnEqualTitleAndSize() {
+    public void addBookAndFindByAuthorShouldReturnProperBook() {
         //given
         Author author = givenAuthor();
         Book effectiveJava = givenEffectiveJava();
