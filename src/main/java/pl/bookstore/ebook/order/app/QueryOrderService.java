@@ -22,12 +22,19 @@ class QueryOrderService implements QueryOrderUseCase {
     @Override
     @Transactional
     public List<OrderDto> findAll() {
-        return repository.findAll().stream().map(this::toOrderDto).toList();
+        return repository
+                .findAll()
+                .stream()
+                .map(this::toOrderDto)
+                .toList();
     }
 
     @Override
+    @Transactional
     public Optional<OrderDto> findById(final Long id) {
-        return repository.findById(id).map(this::toOrderDto);
+        return repository
+                .findById(id)
+                .map(this::toOrderDto);
     }
 
     private OrderDto toOrderDto(final Order order) {

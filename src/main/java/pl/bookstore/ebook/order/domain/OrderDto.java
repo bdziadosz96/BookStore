@@ -16,12 +16,4 @@ public class OrderDto {
     LocalDateTime createdAt;
     OrderPrice orderPrice;
     BigDecimal finalPrice;
-
-
-    public BigDecimal totalPrice() {
-        return items.stream()
-                .map(item -> item.getBook().getPrice().multiply(new BigDecimal(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
 }

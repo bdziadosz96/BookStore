@@ -14,6 +14,7 @@ import pl.bookstore.ebook.clock.Clock;
 import pl.bookstore.ebook.order.app.ManageOrderService;
 import pl.bookstore.ebook.order.app.QueryOrderService;
 import pl.bookstore.ebook.order.db.OrderJpaRepository;
+import pl.bookstore.ebook.order.domain.Delivery;
 import pl.bookstore.ebook.order.domain.OrderStatus;
 import pl.bookstore.ebook.order.domain.Recipient;
 
@@ -71,6 +72,7 @@ class AbandonedOrdersJobTest {
     private Long placeOrder(Book book, int quantity) {
         PlaceOrderCommand command = PlaceOrderCommand.builder()
                 .recipient(recipient())
+                .delivery(Delivery.COURIER)
                 .item(new OrderItemCommand(book.getId(), quantity))
                 .build();
         return manageOrderService.placeOrder(command).getRight();

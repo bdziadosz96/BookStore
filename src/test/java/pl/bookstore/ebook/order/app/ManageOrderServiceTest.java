@@ -13,6 +13,7 @@ import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.db.BookJpaRepository;
 import pl.bookstore.ebook.catalog.domain.Book;
 import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
+import pl.bookstore.ebook.order.domain.Delivery;
 import pl.bookstore.ebook.order.domain.OrderDto;
 import pl.bookstore.ebook.order.domain.OrderStatus;
 import pl.bookstore.ebook.order.domain.Recipient;
@@ -254,6 +255,47 @@ class ManageOrderServiceTest {
         assertEquals(OrderStatus.NEW, queryOrderService.findById(orderId).get().getStatus());
     }
 
+    @Test
+    public void shippingCostsAreDiscountedOver100() {
+        //given
+        Book book = givenEffectiveJava();
+
+        //when
+        Long orderId = placeOrderWithQuantity(book, 10);
+
+        //then
+        OrderDto orderDto = orderOf(orderId);
+        assertEquals(190, orderDto.getFinalPrice().intValue());
+    }
+
+    @Test
+    public void shippingCostsAreNotDiscountedOver100() {
+        //given
+        Book book = givenEffectiveJava();
+
+        //when
+        Long orderId = placeOrderWithQuantity(book, 3);
+
+        //then
+        OrderDto orderDto = orderOf(orderId);
+        assertEquals("69.90", orderDto.getFinalPrice().toPlainString());
+    }
+
+    //TODO: Test for 200 and 400 usd discounts
+
+    private OrderDto orderOf(Long orderId) {
+        return queryOrderService.findById(orderId).get();
+    }
+
+    private Long placeOrderWithQuantity(Book book, int copies) {
+        PlaceOrderCommand command = PlaceOrderCommand.builder()
+                .recipient(recipient())
+                .delivery(Delivery.COURIER)
+                .item(new OrderItemCommand(book.getId(), copies))
+                .build();
+        return manageOrderService.placeOrder(command).getRight();
+    }
+
     private long availableCopiesOf(Book effectiveJava) {
         return bookJpaRepository.findById(effectiveJava.getId()).get().getAvailable();
     }
@@ -262,6 +304,7 @@ class ManageOrderServiceTest {
     private Long placeOrder(Book effectiveJava, Book javaPuzzlers, String email) {
         PlaceOrderCommand command = PlaceOrderCommand.builder()
                 .recipient(recipient(email))
+                .delivery(Delivery.COURIER)
                 .item(new OrderItemCommand(effectiveJava.getId(), 10))
                 .item(new OrderItemCommand(javaPuzzlers.getId(), 15))
                 .build();
@@ -288,6 +331,7 @@ class ManageOrderServiceTest {
     private Long placeOrder(Book book, String email) {
         PlaceOrderCommand command = PlaceOrderCommand.builder()
                 .recipient(recipient(email))
+                .delivery(Delivery.COURIER)
                 .item(new OrderItemCommand(book.getId(), 10))
                 .build();
         return manageOrderService.placeOrder(command).getRight();
@@ -320,7 +364,7 @@ class ManageOrderServiceTest {
         return bookJpaRepository.save(new Book(
                 "Effective Java",
                 2005,
-                new BigDecimal("19.99"),
+                new BigDecimal("20"),
                 50L
         ));
     }

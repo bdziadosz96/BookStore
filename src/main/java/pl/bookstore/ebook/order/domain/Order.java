@@ -1,5 +1,6 @@
 package pl.bookstore.ebook.order.domain;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -57,5 +58,15 @@ public class Order extends BaseEntity {
         UpdateStatusResult result = status.update(newStatus);
         status = result.getNewStatus();
         return result;
+    }
+
+    public BigDecimal getItemsPrice() {
+        return items.stream()
+                .map(item -> item.getBook().getPrice().multiply(new BigDecimal(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getDeliveryPrice() {
+        return delivery.getPrice();
     }
 }
