@@ -1,9 +1,11 @@
 package pl.bookstore.ebook.order.price;
 
+import org.springframework.stereotype.Service;
 import pl.bookstore.ebook.order.domain.Order;
 
-class PriceService {
-    public void calculatePrice(Order order) {
-
+@Service
+public class PriceService {
+    public OrderPrice calculatePrice(Order order) {
+        return null;
     }
 }
