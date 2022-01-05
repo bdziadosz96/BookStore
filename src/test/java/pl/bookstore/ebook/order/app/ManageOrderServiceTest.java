@@ -194,11 +194,6 @@ class ManageOrderServiceTest {
 
 
     @NotNull
-    private UpdateOrderStatusCommand updateStatusTo(Long orderId, OrderStatus orderStatus) {
-        return new UpdateOrderStatusCommand(orderId, orderStatus, null);
-    }
-
-    @NotNull
     private UpdateOrderStatusCommand updateStatusTo(Long orderId, OrderStatus orderStatus, String email) {
         return new UpdateOrderStatusCommand(orderId, orderStatus, email);
     }
@@ -269,7 +264,7 @@ class ManageOrderServiceTest {
     }
 
     @Test
-    public void shippingCostsAreNotDiscountedOver100() {
+    public void shippingCostsAreNotDiscountedLessThan100() {
         //given
         Book book = givenEffectiveJava();
 
@@ -281,7 +276,31 @@ class ManageOrderServiceTest {
         assertEquals("69.90", orderDto.getFinalPrice().toPlainString());
     }
 
-    //TODO: Test for 200 and 400 usd discounts
+    @Test
+    public void cheapestBookAreNotDiscountedMoreThan400() {
+        //given
+        Book book = givenEffectiveJava();
+
+        //when
+        Long orderId = placeOrderWithQuantity(book, 20);
+
+        //then
+        OrderDto orderDto = orderOf(orderId);
+        assertEquals("380.00", orderDto.getFinalPrice().toPlainString());
+    }
+
+    @Test
+    public void cheapestBookAreHalfPriceDiscountedMoreThan200() {
+        //given
+        Book book = givenEffectiveJava();
+
+        //when
+        Long orderId = placeOrderWithQuantity(book, 15);
+
+        //then
+        OrderDto orderDto = orderOf(orderId);
+        assertEquals("290.00", orderDto.getFinalPrice().toPlainString());
+    }
 
     private OrderDto orderOf(Long orderId) {
         return queryOrderService.findById(orderId).get();

@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "com.diffplug.spotless" version "5.17.1"
     id 'java'
+    id 'jacoco'
 }
 
 group = 'pl.bookstore'
@@ -43,6 +44,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    finalizedBy(jacocoTestReport)
 }
 
 spotless {
@@ -51,3 +53,11 @@ spotless {
     }
 }
 
+jacocoTestReport {
+    dependsOn(test)
+    reports {
+        xml.enabled(true)
+        csv.enabled(true)
+        html.enabled(true)
+    }
+}
