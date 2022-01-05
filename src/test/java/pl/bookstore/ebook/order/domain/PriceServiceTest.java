@@ -10,7 +10,7 @@ import pl.bookstore.ebook.catalog.domain.Book;
 import pl.bookstore.ebook.order.price.OrderPrice;
 
 
-class OrderDtoTest {
+class PriceServiceTest {
 
     @Test
     public void givenEmptyOrderDtoWhenCalculateTotalPriceWithCourier_thenReturnOk(){
@@ -40,6 +40,32 @@ class OrderDtoTest {
 
     @Test
     public void givenNotEmptyOrderDtoCalculateTotalPrice_thenReturnNotEquals(){
+        //given
+        Book book = new Book("Test",2000,BigDecimal.TEN,5L);
+        OrderItem orderItem = new OrderItem(book,5);
+        OrderPrice orderPrice = new OrderPrice(
+                book.getPrice(),
+                Delivery.COURIER.getPrice(),
+                BigDecimal.ZERO
+        );
+        OrderDto orderDto = new OrderDto(
+                1L,
+                OrderStatus.NEW,
+                Set.of(orderItem),
+                Recipient.builder().build(),
+                LocalDateTime.now(),
+                orderPrice,
+                orderPrice.finalPrice()
+        );
+        //when
+        BigDecimal price = orderDto.getFinalPrice();
+
+        //then
+        Assertions.assertNotEquals(BigDecimal.ZERO, price);
+    }
+
+    @Test
+    public void givenNotEmptyOrderDtoCalculateTotalPrice_thenReturnEquals(){
         //given
         Book book = new Book("Test",2000,BigDecimal.TEN,5L);
         OrderItem orderItem = new OrderItem(book,5);

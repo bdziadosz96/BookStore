@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated
 @EntityListeners(AuditingEntityListener.class)
 public class Upload extends BaseEntity {
   private byte[] file;

@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -138,6 +139,7 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
     }
 
     @Data
+    @Generated
     @AllArgsConstructor
     @NoArgsConstructor
     public static class CsvBook {

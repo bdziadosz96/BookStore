@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Generated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -119,6 +120,7 @@ class CatalogController {
     }
 
     @Data
+    @Generated
     public static class RestBookCommand {
         @DecimalMin(
                 value = "0.01",

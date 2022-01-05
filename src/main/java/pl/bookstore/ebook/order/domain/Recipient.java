@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @AllArgsConstructor
 @Builder
 @Entity
+@Generated
 public class Recipient extends BaseEntity {
     @Column(unique = true)
     private String email;

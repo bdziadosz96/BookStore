@@ -14,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,6 +32,7 @@ import static javax.persistence.EnumType.STRING;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "orders")
+@Generated
 @EntityListeners(AuditingEntityListener.class)
 public class Order extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

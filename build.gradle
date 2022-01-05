@@ -45,6 +45,9 @@ dependencies {
 test {
     useJUnitPlatform()
     finalizedBy(jacocoTestReport)
+    jacoco {
+        exclude("*equals", "*hashcode")
+    }
 }
 
 spotless {
@@ -58,6 +61,6 @@ jacocoTestReport {
     reports {
         xml.enabled(true)
         csv.enabled(true)
-        html.enabled(false)
+        html.enabled(true)
     }
 }

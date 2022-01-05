@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.ManyToMany;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @Entity
 @NoArgsConstructor
 @ToString(exclude = "books")
+@Generated
 @EntityListeners(AuditingEntityListener.class)
 public class Author extends BaseEntity {
     private String name;
