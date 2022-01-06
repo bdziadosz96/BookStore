@@ -43,7 +43,7 @@ import static pl.bookstore.ebook.catalog.app.port.CatalogUseCase.UpdateBookRespo
 @RestController
 @RequestMapping("/catalog")
 @AllArgsConstructor
-class CatalogController {
+public class CatalogController {
     private final CatalogUseCase catalog;
 
     @GetMapping()

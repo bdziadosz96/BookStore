@@ -41,6 +41,7 @@ import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderRes
 
 @Service
 @AllArgsConstructor
+@Generated
 @Slf4j
 class CatalogInitializerService implements CatalogInitializerUseCase {
     private final CatalogUseCase catalog;

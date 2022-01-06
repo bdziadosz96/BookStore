@@ -21,7 +21,7 @@ import pl.bookstore.ebook.uploads.domain.Upload;
 @Slf4j
 @Service
 @AllArgsConstructor
-class CatalogService implements CatalogUseCase {
+public class CatalogService implements CatalogUseCase {
     private final BookJpaRepository catalogRepository;
     private final AuthorJpaRepository authorJpaRepository;
     private final UploadUseCase upload;
@@ -71,7 +71,7 @@ class CatalogService implements CatalogUseCase {
                 .findById(updateBookCommand.id())
                 .map(
                         book -> {
-                            Book updatedBook = updateFiels(updateBookCommand, book);
+                            Book updatedBook = updateFields(updateBookCommand, book);
                             CatalogService.log.info("Update book " + updatedBook.getId());
                             catalogRepository.save(updatedBook);
                             return new UpdateBookResponse(true, Collections.emptyList());
@@ -135,7 +135,7 @@ class CatalogService implements CatalogUseCase {
 
     }
 
-    private Book updateFiels(UpdateBookCommand command, Book book) {
+    private Book updateFields(UpdateBookCommand command, Book book) {
         if (command.title() != null) {
             book.setTitle(command.title());
         }

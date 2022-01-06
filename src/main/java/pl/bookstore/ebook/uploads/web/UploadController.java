@@ -1,6 +1,7 @@
 package pl.bookstore.ebook.uploads.web;
 
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -66,7 +67,12 @@ class UploadController {
             )).toList();
   }
 
-  record UploadResponse(Long id, String contentType, String fileName, LocalDateTime createdAt) {}
+  @Generated
+  record UploadResponse(Long id, String contentType, String fileName, LocalDateTime createdAt) {
+      public String getContentType() {
+          return contentType();
+      }
+  }
 }
 
 //    String id;
