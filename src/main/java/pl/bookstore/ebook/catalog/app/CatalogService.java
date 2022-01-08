@@ -79,7 +79,10 @@ public class CatalogService implements CatalogUseCase {
                 .orElseGet(
                         () ->
                                 new UpdateBookResponse(
-                                        false, List.of("Nie znaleziono książki o id " + updateBookCommand.id())));
+                                        false,
+                                        List.of(
+                                                "Nie znaleziono książki o id "
+                                                        + updateBookCommand.id())));
     }
 
     @Override
@@ -98,7 +101,9 @@ public class CatalogService implements CatalogUseCase {
                             Upload savedUpload =
                                     upload.save(
                                             new SaveUploadCommand(
-                                                    command.fileName(), command.file(), command.contentType()));
+                                                    command.fileName(),
+                                                    command.file(),
+                                                    command.contentType()));
                             CatalogService.log.info("Updated book cover: " + book.getId());
                             book.setCoverId(savedUpload.getId());
                             catalogRepository.save(book);
@@ -122,8 +127,7 @@ public class CatalogService implements CatalogUseCase {
     }
 
     private Book toBook(CreateBookCommand command) {
-        Book book =
-                new Book(command.title(), command.year(), command.price(), command.available());
+        Book book = new Book(command.title(), command.year(), command.price(), command.available());
         Set<Author> authors = fetchAuthorsByIds(command.authors());
         updateBooks(book, authors);
         return book;
@@ -132,7 +136,6 @@ public class CatalogService implements CatalogUseCase {
     private void updateBooks(Book book, Set<Author> authors) {
         book.removeAuthors();
         authors.forEach(book::addAuthor);
-
     }
 
     private Book updateFields(UpdateBookCommand command, Book book) {
@@ -160,7 +163,8 @@ public class CatalogService implements CatalogUseCase {
                                         .orElseThrow(
                                                 () ->
                                                         new IllegalStateException(
-                                                                "Unable to find author with id: " + authorId)))
+                                                                "Unable to find author with id: "
+                                                                        + authorId)))
                 .collect(Collectors.toSet());
     }
 }

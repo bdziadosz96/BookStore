@@ -23,8 +23,7 @@ import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderRes
 @Service
 @AllArgsConstructor
 @Transactional
-public
-class ManageOrderService implements ManageOrderUseCase {
+public class ManageOrderService implements ManageOrderUseCase {
     private final OrderJpaRepository orderRepository;
     private final BookJpaRepository bookRepository;
     private final RecipientJpaRepository recipientRepository;
@@ -32,16 +31,13 @@ class ManageOrderService implements ManageOrderUseCase {
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
         Set<OrderItem> items =
-                command.getItems()
-                        .stream()
-                        .map(this::toOrderItem)
-                        .collect(Collectors.toSet());
-        Order order = Order
-                .builder()
-                .items(items)
-                .recipient(getOrCreateRecipient(command.getRecipient()))
-                .delivery(command.getDelivery())
-                .build();
+                command.getItems().stream().map(this::toOrderItem).collect(Collectors.toSet());
+        Order order =
+                Order.builder()
+                        .items(items)
+                        .recipient(getOrCreateRecipient(command.getRecipient()))
+                        .delivery(command.getDelivery())
+                        .build();
         Order save = orderRepository.save(order);
         bookRepository.saveAll(reduceBooks(items));
         ManageOrderService.log.info("Placed order: " + save.getId());
@@ -49,21 +45,33 @@ class ManageOrderService implements ManageOrderUseCase {
     }
 
     private Recipient getOrCreateRecipient(Recipient recipient) {
-        return recipientRepository.findRecipientByEmailIgnoreCase(recipient.getEmail())
+        return recipientRepository
+                .findRecipientByEmailIgnoreCase(recipient.getEmail())
                 .orElse(recipient);
     }
 
-
     private OrderItem toOrderItem(OrderItemCommand command) {
-        Book book = bookRepository.findById(command.getBookId())
-                .orElseThrow(() -> new EntityNotFoundException("Cannot find books with given id: " + command.getBookId()));
+        Book book =
+                bookRepository
+                        .findById(command.getBookId())
+                        .orElseThrow(
+                                () ->
+                                        new EntityNotFoundException(
+                                                "Cannot find books with given id: "
+                                                        + command.getBookId()));
         int quantity = command.getQuantity();
         Long available = book.getAvailable();
         if (available >= quantity && quantity > 0) {
             return new OrderItem(book, command.getQuantity());
         }
-        throw new IllegalStateException("Request copies of book " + book.getId() +
-                " requested " + quantity + " of " + book.getAvailable() + " available ");
+        throw new IllegalStateException(
+                "Request copies of book "
+                        + book.getId()
+                        + " requested "
+                        + quantity
+                        + " of "
+                        + book.getAvailable()
+                        + " available ");
     }
 
     @Override
@@ -76,18 +84,23 @@ class ManageOrderService implements ManageOrderUseCase {
     public UpdateStatusResponse updateOrderStatus(UpdateOrderStatusCommand command) {
         return orderRepository
                 .findById(command.getOrderId())
-                .map(order -> {
-                    if (!hasAccess(command, order)) {
-                        return UpdateStatusResponse.failure("Unauthorized");
-                    }
-                    var updateStatusResult = order.updateStatus(command.getStatus());
-                    if (updateStatusResult.isRevoked()) {
-                        bookRepository.saveAll(revokeBooks(order.getItems()));
-                    }
-                    ManageOrderService.log.info("Updated order status " + command.getStatus() + " with id: " + order.getId());
-                    orderRepository.save(order);
-                    return UpdateStatusResponse.success(order.getStatus());
-                })
+                .map(
+                        order -> {
+                            if (!hasAccess(command, order)) {
+                                return UpdateStatusResponse.failure("Unauthorized");
+                            }
+                            var updateStatusResult = order.updateStatus(command.getStatus());
+                            if (updateStatusResult.isRevoked()) {
+                                bookRepository.saveAll(revokeBooks(order.getItems()));
+                            }
+                            ManageOrderService.log.info(
+                                    "Updated order status "
+                                            + command.getStatus()
+                                            + " with id: "
+                                            + order.getId());
+                            orderRepository.save(order);
+                            return UpdateStatusResponse.success(order.getStatus());
+                        })
                 .orElse(UpdateStatusResponse.failure("Order not found"));
     }
 
@@ -98,19 +111,23 @@ class ManageOrderService implements ManageOrderUseCase {
 
     private Set<Book> reduceBooks(Set<OrderItem> items) {
         return items.stream()
-                .map(item -> {
-                    Book book = item.getBook();
-                    book.setAvailable(book.getAvailable() - item.getQuantity());
-                    return book;
-                }).collect(Collectors.toSet());
+                .map(
+                        item -> {
+                            Book book = item.getBook();
+                            book.setAvailable(book.getAvailable() - item.getQuantity());
+                            return book;
+                        })
+                .collect(Collectors.toSet());
     }
 
     private Set<Book> revokeBooks(Set<OrderItem> items) {
         return items.stream()
-                .map(item -> {
-                    Book book = item.getBook();
-                    book.setAvailable(book.getAvailable() + item.getQuantity());
-                    return book;
-                }).collect(Collectors.toSet());
+                .map(
+                        item -> {
+                            Book book = item.getBook();
+                            book.setAvailable(book.getAvailable() + item.getQuantity());
+                            return book;
+                        })
+                .collect(Collectors.toSet());
     }
 }

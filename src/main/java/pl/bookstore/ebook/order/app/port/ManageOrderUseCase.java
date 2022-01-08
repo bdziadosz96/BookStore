@@ -23,11 +23,9 @@ public interface ManageOrderUseCase {
     @AllArgsConstructor
     @Generated
     class PlaceOrderCommand {
-        @Singular
-        List<OrderItemCommand> items;
+        @Singular List<OrderItemCommand> items;
         Recipient recipient;
-        @Builder.Default
-        Delivery delivery = Delivery.COURIER;
+        @Builder.Default Delivery delivery = Delivery.COURIER;
     }
 
     @Value

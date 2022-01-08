@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Generated
-public class UpdateStatusResult  {
+public class UpdateStatusResult {
     OrderStatus newStatus;
     boolean revoked;
 
@@ -16,5 +16,4 @@ public class UpdateStatusResult  {
     static UpdateStatusResult failure(OrderStatus newStatus) {
         return new UpdateStatusResult(newStatus, true);
     }
-} 
-  
+}

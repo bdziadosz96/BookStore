@@ -46,15 +46,13 @@ public class Order extends BaseEntity {
     @Enumerated(STRING)
     private OrderStatus status = OrderStatus.NEW;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+    @CreatedDate private LocalDateTime createdAt;
 
     @Builder.Default
     @Enumerated(STRING)
     private Delivery delivery = Delivery.COURIER;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+    @LastModifiedDate private LocalDateTime updatedAt;
 
     public UpdateStatusResult updateStatus(OrderStatus newStatus) {
         UpdateStatusResult result = status.update(newStatus);

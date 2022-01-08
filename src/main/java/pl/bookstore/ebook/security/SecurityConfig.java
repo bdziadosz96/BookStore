@@ -10,17 +10,17 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .mvcMatchers(HttpMethod.GET,"/catalog/**")
+        http.authorizeRequests()
+                .mvcMatchers(HttpMethod.GET, "/catalog/**")
                 .permitAll()
-                .mvcMatchers(HttpMethod.POST,"/admin/initialize")
+                .mvcMatchers(HttpMethod.POST, "/admin/initialize")
                 .permitAll()
-                .anyRequest().authenticated()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .httpBasic()
                 .and()
-                .csrf().disable();
-
+                .csrf()
+                .disable();
     }
 }

@@ -9,5 +9,4 @@ public interface QueryOrderUseCase {
     List<OrderDto> findAll();
 
     Optional<OrderDto> findById(Long id);
-
 }

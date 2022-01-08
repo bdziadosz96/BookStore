@@ -20,14 +20,14 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @Generated
 @EntityListeners(AuditingEntityListener.class)
 public class Upload extends BaseEntity {
-  private byte[] file;
-  private String contentType;
-  private String filename;
-  @CreatedDate private LocalDateTime createAt;
+    private byte[] file;
+    private String contentType;
+    private String filename;
+    @CreatedDate private LocalDateTime createAt;
 
-  public Upload(final String filename, final String contentType, final byte[] file) {
-    this.file = file;
-    this.contentType = contentType;
-    this.filename = filename;
-  }
+    public Upload(final String filename, final String contentType, final byte[] file) {
+        this.file = file;
+        this.contentType = contentType;
+        this.filename = filename;
+    }
 }

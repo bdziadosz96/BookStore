@@ -14,27 +14,20 @@ import pl.bookstore.ebook.order.price.PriceService;
 
 @Service
 @AllArgsConstructor
-public
-class QueryOrderService implements QueryOrderUseCase {
+public class QueryOrderService implements QueryOrderUseCase {
     private final OrderJpaRepository repository;
     private final PriceService priceService;
 
     @Override
     @Transactional
     public List<OrderDto> findAll() {
-        return repository
-                .findAll()
-                .stream()
-                .map(this::toOrderDto)
-                .toList();
+        return repository.findAll().stream().map(this::toOrderDto).toList();
     }
 
     @Override
     @Transactional
     public Optional<OrderDto> findById(final Long id) {
-        return repository
-                .findById(id)
-                .map(this::toOrderDto);
+        return repository.findById(id).map(this::toOrderDto);
     }
 
     private OrderDto toOrderDto(final Order order) {
@@ -46,8 +39,6 @@ class QueryOrderService implements QueryOrderUseCase {
                 order.getRecipient(),
                 order.getCreatedAt(),
                 orderPrice,
-                orderPrice.finalPrice()
-        );
+                orderPrice.finalPrice());
     }
-
 }

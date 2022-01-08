@@ -66,14 +66,16 @@ class OrderController {
         final OrderStatus orderStatus =
                 OrderStatus.checkString(status)
                         .orElseThrow(
-                                () -> new ResponseStatusException(BAD_REQUEST, "Unkown status: " + status));
-        UpdateOrderStatusCommand command = new UpdateOrderStatusCommand(id, orderStatus, "admin@admin.pl");
+                                () ->
+                                        new ResponseStatusException(
+                                                BAD_REQUEST, "Unkown status: " + status));
+        UpdateOrderStatusCommand command =
+                new UpdateOrderStatusCommand(id, orderStatus, "admin@admin.pl");
         return manageOrder
                 .updateOrderStatus(command)
                 .handle(
                         orderId -> ResponseEntity.created(orderUri(id)).build(),
                         error -> ResponseEntity.badRequest().body(error));
-
     }
 
     @DeleteMapping("/{id}")

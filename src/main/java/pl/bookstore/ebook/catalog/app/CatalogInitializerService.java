@@ -59,11 +59,13 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
 
     private void initData() {
         ClassPathResource resource = new ClassPathResource("books.csv");
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
-            CsvToBean<CsvBook> build = new CsvToBeanBuilder<CsvBook>(reader)
-                    .withIgnoreLeadingWhiteSpace(true)
-                    .withType(CsvBook.class)
-                    .build();
+        try (BufferedReader reader =
+                new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
+            CsvToBean<CsvBook> build =
+                    new CsvToBeanBuilder<CsvBook>(reader)
+                            .withIgnoreLeadingWhiteSpace(true)
+                            .withType(CsvBook.class)
+                            .build();
             build.forEach(this::initBook);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to parse CSV fail", e);
@@ -71,26 +73,24 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
     }
 
     private void initBook(CsvBook csvBook) {
-        Set<Long> authors = Arrays.stream(csvBook.authors.split(","))
-                .filter(StringUtils::isNotBlank)
-                .map(String::trim)
-                .map(this::getOrCreateAuthor)
-                .map(BaseEntity::getId)
-                .collect(Collectors.toSet());
-        CreateBookCommand command = new CreateBookCommand(
-                csvBook.title,
-                authors,
-                csvBook.year,
-                csvBook.amount,
-                50L
-        );
+        Set<Long> authors =
+                Arrays.stream(csvBook.authors.split(","))
+                        .filter(StringUtils::isNotBlank)
+                        .map(String::trim)
+                        .map(this::getOrCreateAuthor)
+                        .map(BaseEntity::getId)
+                        .collect(Collectors.toSet());
+        CreateBookCommand command =
+                new CreateBookCommand(csvBook.title, authors, csvBook.year, csvBook.amount, 50L);
         Book book = catalog.addBook(command);
         catalog.updateBookCover(updateBookCoverCommand(book.getId(), csvBook.thumbnail));
     }
 
     private UpdateBookCoverCommand updateBookCoverCommand(Long bookId, String thumbnailUrl) {
-        ResponseEntity<byte[]> response = restTemplate.exchange(thumbnailUrl, HttpMethod.GET, null, byte[].class);
-        String contentType = Objects.requireNonNull(response.getHeaders().getContentType()).toString();
+        ResponseEntity<byte[]> response =
+                restTemplate.exchange(thumbnailUrl, HttpMethod.GET, null, byte[].class);
+        String contentType =
+                Objects.requireNonNull(response.getHeaders().getContentType()).toString();
         return new UpdateBookCoverCommand(bookId, response.getBody(), contentType, "cover");
     }
 
@@ -100,15 +100,12 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
                 .orElseGet(() -> authorRepository.save(new Author(name)));
     }
 
-
     private void placeOrder() {
         Book effective_java =
-                catalog
-                        .findOneByTitle("Effective Java")
+                catalog.findOneByTitle("Effective Java")
                         .orElseThrow(() -> new IllegalStateException("Cannot find book!"));
         Book clean_code =
-                catalog
-                        .findOneByTitle("Refactoring")
+                catalog.findOneByTitle("Refactoring")
                         .orElseThrow(() -> new IllegalStateException("Cannot find book!"));
 
         Recipient recipient =
@@ -129,13 +126,14 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
                         .build();
 
         PlaceOrderResponse response = manageOrder.placeOrder(command);
-        String result = response.handle(
-                orderId -> "Created ORDER with id: " + orderId,
-                error -> "Failed to created order: " + error
-        );
+        String result =
+                response.handle(
+                        orderId -> "Created ORDER with id: " + orderId,
+                        error -> "Failed to created order: " + error);
         log.info(result);
 
-        queryOrder.findAll()
+        queryOrder
+                .findAll()
                 .forEach(order -> log.info("GET ORDER WITH TOTAL PRICE " + order.getFinalPrice()));
     }
 
@@ -144,15 +142,10 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class CsvBook {
-        @CsvBindByName
-        private String title;
-        @CsvBindByName
-        private String authors;
-        @CsvBindByName
-        private Integer year;
-        @CsvBindByName
-        private BigDecimal amount;
-        @CsvBindByName
-        private String thumbnail;
+        @CsvBindByName private String title;
+        @CsvBindByName private String authors;
+        @CsvBindByName private Integer year;
+        @CsvBindByName private BigDecimal amount;
+        @CsvBindByName private String thumbnail;
     }
 }

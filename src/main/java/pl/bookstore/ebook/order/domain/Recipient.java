@@ -20,6 +20,7 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 public class Recipient extends BaseEntity {
     @Column(unique = true)
     private String email;
+
     private String name;
     private String phone;
     private String street;

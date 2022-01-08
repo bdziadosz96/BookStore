@@ -18,5 +18,4 @@ class AdminStartupController {
     public void initialize() {
         initializer.load();
     }
-
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class AuthorService implements AuthorUseCase{
+public class AuthorService implements AuthorUseCase {
     private final AuthorJpaRepository repository;
 
     @Override

@@ -49,7 +49,8 @@ public class CatalogController {
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public List<Book> getAll(
-            @RequestParam final Optional<String> title, @RequestParam final Optional<String> author) {
+            @RequestParam final Optional<String> title,
+            @RequestParam final Optional<String> author) {
         if (author.isPresent() && title.isPresent()) {
             return catalog.findByAuthorAndTitle(author.get(), title.get());
         } else if (author.isPresent()) {
@@ -63,7 +64,9 @@ public class CatalogController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable final Long id) {
-        return catalog.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return catalog.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -113,11 +116,9 @@ public class CatalogController {
         return new CreatedURI("/" + book.getId().toString()).uri();
     }
 
-    interface UpdateValidation {
-    }
+    interface UpdateValidation {}
 
-    interface CreateValidation {
-    }
+    interface CreateValidation {}
 
     @Data
     @Generated
@@ -138,9 +139,7 @@ public class CatalogController {
         @NotNull(message = "year cannot be null", groups = CreateValidation.class)
         private Integer year;
 
-        @NotNull
-        @PositiveOrZero
-        private Long available;
+        @NotNull @PositiveOrZero private Long available;
 
         CreateBookCommand toCreateCommand() {
             return new CreateBookCommand(title, authors, year, price, available);

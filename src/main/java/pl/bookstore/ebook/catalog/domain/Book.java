@@ -31,14 +31,13 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 public class Book extends BaseEntity {
     @Column(unique = true)
     private String title;
+
     private Integer year;
     private BigDecimal price;
     private Long coverId;
     private Long available;
-    @CreatedDate
-    private LocalDateTime createdAt;
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+    @CreatedDate private LocalDateTime createdAt;
+    @LastModifiedDate private LocalDateTime updatedAt;
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable

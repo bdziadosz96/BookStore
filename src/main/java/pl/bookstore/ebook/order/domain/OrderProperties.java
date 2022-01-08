@@ -14,4 +14,3 @@ public class OrderProperties {
     Duration announcementsLifetime;
     String cronDelayJob;
 }
-

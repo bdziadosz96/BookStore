@@ -16,35 +16,36 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 class GlobalExceptionHandler {
 
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<?> handleMethodArgument(final MethodArgumentNotValidException e) {
-    final List<String> errors =
-        e.getBindingResult().getFieldErrors().stream()
-            .map(x -> x.getField() + " - " + x.getDefaultMessage())
-            .toList();
-    return handleErrors(HttpStatus.BAD_REQUEST, errors);
-  }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgument(final MethodArgumentNotValidException e) {
+        final List<String> errors =
+                e.getBindingResult().getFieldErrors().stream()
+                        .map(x -> x.getField() + " - " + x.getDefaultMessage())
+                        .toList();
+        return handleErrors(HttpStatus.BAD_REQUEST, errors);
+    }
 
-  @ExceptionHandler(IllegalStateException.class)
-  public ResponseEntity<?> handleIllegalState(final IllegalStateException e) {
-    return handleErrors(HttpStatus.BAD_REQUEST, List.of(e.getMessage()));
-  }
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<?> handleIllegalState(final IllegalStateException e) {
+        return handleErrors(HttpStatus.BAD_REQUEST, List.of(e.getMessage()));
+    }
 
-  @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<?> handleMessageNotReadable(final HttpMessageNotReadableException e) {
-    return handleErrors(HttpStatus.BAD_REQUEST, Collections.singletonList(e.getMessage()));
-  }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleMessageNotReadable(final HttpMessageNotReadableException e) {
+        return handleErrors(HttpStatus.BAD_REQUEST, Collections.singletonList(e.getMessage()));
+    }
 
-  @ExceptionHandler(EntityNotFoundException.class)
-  public ResponseEntity<?> handleEntityNotFoundException(final EntityNotFoundException e) {
-    return handleErrors(HttpStatus.BAD_REQUEST, Collections.singletonList(e.getMessage()));
-  }
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> handleEntityNotFoundException(final EntityNotFoundException e) {
+        return handleErrors(HttpStatus.BAD_REQUEST, Collections.singletonList(e.getMessage()));
+    }
 
-  private ResponseEntity<Object> handleErrors(final HttpStatus status, final List<String> errors) {
-    final Map<String, Object> body = new LinkedHashMap<>();
-    body.put("timestamp", new Date());
-    body.put("status", status.value());
-    body.put("erros", errors);
-    return new ResponseEntity<>(body, status);
-  }
+    private ResponseEntity<Object> handleErrors(
+            final HttpStatus status, final List<String> errors) {
+        final Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", status.value());
+        body.put("erros", errors);
+        return new ResponseEntity<>(body, status);
+    }
 }

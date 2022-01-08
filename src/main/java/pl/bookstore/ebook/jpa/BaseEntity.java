@@ -13,6 +13,6 @@ import lombok.Setter;
 @MappedSuperclass
 @EqualsAndHashCode
 public abstract class BaseEntity {
-  @Id @GeneratedValue private Long id;
-  private String uuid = UUID.randomUUID().toString();
+    @Id @GeneratedValue private Long id;
+    private String uuid = UUID.randomUUID().toString();
 }

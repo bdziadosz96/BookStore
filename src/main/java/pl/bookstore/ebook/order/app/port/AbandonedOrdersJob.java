@@ -26,11 +26,18 @@ class AbandonedOrdersJob {
         Duration announcementsLifetime = properties.getAnnouncementsLifetime();
         LocalDateTime timestamp = clock.now().minus(announcementsLifetime);
         var orders = repository.findByStatusAndCreatedAtLessThanEqual(OrderStatus.NEW, timestamp);
-        AbandonedOrdersJob.log.info("Orders with status: " + OrderStatus.NEW + " remaining one minute " + orders.size());
-        orders.forEach(order -> {
-            String admin = "admin@admin.pl";
-            UpdateOrderStatusCommand command = new UpdateOrderStatusCommand(order.getId(), OrderStatus.ABANDONED, admin);
-            orderUseCase.updateOrderStatus(command);
-        });
+        AbandonedOrdersJob.log.info(
+                "Orders with status: "
+                        + OrderStatus.NEW
+                        + " remaining one minute "
+                        + orders.size());
+        orders.forEach(
+                order -> {
+                    String admin = "admin@admin.pl";
+                    UpdateOrderStatusCommand command =
+                            new UpdateOrderStatusCommand(
+                                    order.getId(), OrderStatus.ABANDONED, admin);
+                    orderUseCase.updateOrderStatus(command);
+                });
     }
 }

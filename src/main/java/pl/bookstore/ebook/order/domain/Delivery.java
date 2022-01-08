@@ -6,8 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public
-enum Delivery {
+public enum Delivery {
     SELF_PICKUP(BigDecimal.ZERO),
     COURIER(new BigDecimal("9.90"));
 
