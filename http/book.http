@@ -1,9 +1,12 @@
 
 ###
-PUT http://localhost:8081/catalog/{{id}}
-
-###
 GET http://localhost:8081/catalog
 
 ###
-GET http://localhost:8081/orders
+GET http://localhost:8081/orders/1
+
+###
+GET http://localhost:8081/authors
+
+###
+POST http://localhost:8081/admin/initialize
