@@ -67,6 +67,9 @@ public class Order extends BaseEntity {
     }
 
     public BigDecimal getDeliveryPrice() {
+        if (items.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
         return delivery.getPrice();
     }
 }

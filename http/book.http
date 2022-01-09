@@ -3,10 +3,31 @@
 GET http://localhost:8081/catalog
 
 ###
-GET http://localhost:8081/orders/1
+GET http://localhost:8081/orders/199
 
 ###
 GET http://localhost:8081/authors
 
 ###
 POST http://localhost:8081/admin/initialize
+
+###
+POST http://localhost:8081/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "bookId": 89,
+      "quantity": 1
+    }
+  ],
+  "recipient": {
+    "email": "test@recipiento.pl",
+    "name": "test",
+    "phone": "test",
+    "street": "testowa",
+    "city": "test",
+    "zipCode": "test-test"
+  }
+}

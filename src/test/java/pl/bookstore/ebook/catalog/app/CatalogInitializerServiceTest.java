@@ -9,29 +9,27 @@ import pl.bookstore.ebook.order.app.port.QueryOrderUseCase;
 import pl.bookstore.ebook.order.db.OrderJpaRepository;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+/*
+Need to be done in PSQL, in case of h2-database it can't be SQLError connected
+with maximal column length
+*/
 @SpringBootTest
 @Transactional
 class CatalogInitializerServiceTest {
-    @Autowired
-    CatalogInitializerService service;
+    @Autowired CatalogInitializerService service;
 
-    @Autowired
-    OrderJpaRepository orderJpaRepository;
+    @Autowired OrderJpaRepository orderJpaRepository;
 
-    @Autowired
-    QueryOrderUseCase queryOrderUseCase;
+    @Autowired QueryOrderUseCase queryOrderUseCase;
 
-    @Autowired
-    BookJpaRepository repository;
-
+    @Autowired BookJpaRepository repository;
 
     @Test
     public void placeOrderInitializeProperStatement() {
-        //given+when
+        // given+when
         service.load();
 
-        //then
+        // then
         assertTrue(repository.findAll().size() > 0);
         assertTrue(orderJpaRepository.findAll().size() > 0);
     }
