@@ -14,10 +14,9 @@ import pl.bookstore.ebook.order.app.port.ManageOrderUseCase;
 import pl.bookstore.ebook.order.db.OrderJpaRepository;
 import pl.bookstore.ebook.order.domain.Order;
 import pl.bookstore.ebook.order.domain.OrderItem;
-import pl.bookstore.ebook.order.domain.OrderStatus;
 import pl.bookstore.ebook.order.domain.Recipient;
 
-import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderResponse.*;
+import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderResponse.success;
 
 @Slf4j
 @Service
@@ -31,7 +30,11 @@ public class ManageOrderService implements ManageOrderUseCase {
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
         Set<OrderItem> items =
-                command.getItems().stream().map(this::toOrderItem).collect(Collectors.toSet());
+                command
+                        .getItems()
+                        .stream()
+                        .map(this::toOrderItem)
+                        .collect(Collectors.toSet());
         Order order =
                 Order.builder()
                         .items(items)

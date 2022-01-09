@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Generated;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +40,6 @@ import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderRes
 
 @Service
 @AllArgsConstructor
-@Generated
 @Slf4j
 class CatalogInitializerService implements CatalogInitializerUseCase {
     private final CatalogUseCase catalog;
@@ -138,7 +136,6 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
     }
 
     @Data
-    @Generated
     @AllArgsConstructor
     @NoArgsConstructor
     public static class CsvBook {

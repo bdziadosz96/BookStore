@@ -20,14 +20,18 @@ Content-Type: application/json
     {
       "bookId": 89,
       "quantity": 1
+    },
+    {
+      "bookId": 99,
+      "quantity": 10
     }
   ],
   "recipient": {
-    "email": "test@recipiento.pl",
-    "name": "test",
-    "phone": "test",
-    "street": "testowa",
-    "city": "test",
-    "zipCode": "test-test"
+    "name": "John Doe",
+    "phone": "123-456-789",
+    "street": "Cwiartki 3/4",
+    "city": "Krakow",
+    "zipCode": "30-150",
+    "email": "johndoe@example.org"
   }
 }

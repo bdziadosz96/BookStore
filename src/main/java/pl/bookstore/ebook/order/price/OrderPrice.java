@@ -1,9 +1,15 @@
 package pl.bookstore.ebook.order.price;
 
 import java.math.BigDecimal;
+import lombok.Value;
 
-public record OrderPrice(BigDecimal itemPrice, BigDecimal deliveryPrice, BigDecimal discounts) {
+@Value
+public class OrderPrice {
+    BigDecimal itemsPrice;
+    BigDecimal deliveryPrice;
+    BigDecimal discounts;
+
     public BigDecimal finalPrice() {
-        return itemPrice.add(deliveryPrice).subtract(discounts);
+        return itemsPrice.add(deliveryPrice).subtract(discounts);
     }
 }

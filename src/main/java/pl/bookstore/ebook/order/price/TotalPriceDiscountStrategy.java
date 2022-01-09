@@ -2,30 +2,32 @@ package pl.bookstore.ebook.order.price;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Set;
 import pl.bookstore.ebook.order.domain.Order;
+import pl.bookstore.ebook.order.domain.OrderItem;
 
 class TotalPriceDiscountStrategy implements DiscountStrategy {
+
     @Override
     public BigDecimal calculate(Order order) {
-        BigDecimal lowestBookPrice;
-        if (isGreaterOrEqualTo(order, 400)) {
-            return cheapestBookPrice(order);
-        } else if (isGreaterOrEqualTo(order, 200)) {
-            lowestBookPrice = cheapestBookPrice(order);
-            return lowestBookPrice.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
+        if(isGreaterOrEqual(order, 400)) {
+            return lowestBookPrice(order.getItems());
+        } else if(isGreaterOrEqual(order, 200)) {
+            BigDecimal lowestPrice = lowestBookPrice(order.getItems());
+            return lowestPrice.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
         }
         return BigDecimal.ZERO;
     }
 
-    private BigDecimal cheapestBookPrice(Order order) {
-        return order.getItems().stream()
-                .map(item -> item.getBook().getPrice())
+    private BigDecimal lowestBookPrice(Set <OrderItem> items) {
+        return items.stream()
+                .map(x -> x.getBook().getPrice())
                 .sorted()
                 .findFirst()
                 .orElse(BigDecimal.ZERO);
     }
 
-    private boolean isGreaterOrEqualTo(Order order, int price) {
-        return order.getItemsPrice().compareTo(BigDecimal.valueOf(price)) >= 0;
+    private boolean isGreaterOrEqual(Order order, int value) {
+        return order.getItemsPrice().compareTo(BigDecimal.valueOf(value)) >= 0;
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 
 @ConstructorBinding
 @Value
-@Generated
 @ConfigurationProperties("app.time")
 public class OrderProperties {
     Duration announcementsLifetime;

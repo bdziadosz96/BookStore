@@ -66,7 +66,6 @@ class UploadController {
             )).toList();
   }
 
-  @Generated
   record UploadResponse(Long id, String contentType, String fileName, LocalDateTime createdAt) {
       public String getContentType() {
           return contentType();

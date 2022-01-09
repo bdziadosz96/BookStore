@@ -17,7 +17,6 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Generated
 @EntityListeners(AuditingEntityListener.class)
 public class Upload extends BaseEntity {
     private byte[] file;

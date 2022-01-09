@@ -16,7 +16,6 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Generated
 public class OrderItem extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "book_id")

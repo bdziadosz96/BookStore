@@ -8,7 +8,6 @@ import lombok.Value;
 import pl.bookstore.ebook.order.price.OrderPrice;
 
 @Value
-@Generated
 public class OrderDto {
     Long id;
     OrderStatus status;

@@ -3,7 +3,6 @@ package pl.bookstore.ebook.order.app.port;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Generated;
 import lombok.Singular;
 import lombok.Value;
 import pl.bookstore.ebook.commons.Either;
@@ -18,20 +17,19 @@ public interface ManageOrderUseCase {
 
     UpdateStatusResponse updateOrderStatus(UpdateOrderStatusCommand command);
 
-    @Value
     @Builder
+    @Value
     @AllArgsConstructor
-    @Generated
     class PlaceOrderCommand {
         @Singular List<OrderItemCommand> items;
         Recipient recipient;
-        @Builder.Default Delivery delivery = Delivery.COURIER;
+        @Builder.Default
+        Delivery delivery = Delivery.COURIER;
     }
 
     @Value
     @Builder
     @AllArgsConstructor
-    @Generated
     class UpdateOrderStatusCommand {
         Long orderId;
         OrderStatus status;
@@ -39,7 +37,6 @@ public interface ManageOrderUseCase {
     }
 
     @Value
-    @Generated
     class OrderItemCommand {
         Long bookId;
         int quantity;

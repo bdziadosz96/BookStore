@@ -4,7 +4,6 @@ import lombok.Generated;
 import lombok.Value;
 
 @Value
-@Generated
 public class UpdateStatusResult {
     OrderStatus newStatus;
     boolean revoked;

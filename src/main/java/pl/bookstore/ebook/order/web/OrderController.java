@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -38,11 +39,13 @@ class OrderController {
 
     @GetMapping
     @ResponseStatus(OK)
+    @Secured({"ROLE_ADMIN"})
     public List<OrderDto> getAll() {
         return queryOrder.findAll();
     }
 
     @GetMapping("/{id}")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     public ResponseEntity<?> getById(@PathVariable final Long id) {
         return queryOrder
                 .findById(id)
@@ -52,7 +55,7 @@ class OrderController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public ResponseEntity<?> createOrder(@RequestBody final PlaceOrderCommand command) {
+    public ResponseEntity<?> createOrder(@RequestBody PlaceOrderCommand command) {
         return manageOrder
                 .placeOrder(command)
                 .handle(
@@ -61,6 +64,7 @@ class OrderController {
     }
 
     @PatchMapping("/{id}/status")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     public ResponseEntity<?> updateOrderStatus(
             @PathVariable final Long id, @RequestBody final Map<String, String> body) {
         String status = body.get("status");
@@ -80,6 +84,7 @@ class OrderController {
     }
 
     @DeleteMapping("/{id}")
+    @Secured({"ROLE_ADMIN"})
     @ResponseStatus(NO_CONTENT)
     public void deleteOrder(@PathVariable final Long id) {
         manageOrder.deleteOrderById(id);

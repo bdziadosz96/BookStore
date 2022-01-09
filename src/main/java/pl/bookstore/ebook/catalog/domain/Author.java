@@ -22,7 +22,6 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @Entity
 @NoArgsConstructor
 @ToString(exclude = "books")
-@Generated
 @EntityListeners(AuditingEntityListener.class)
 public class Author extends BaseEntity {
     private String name;

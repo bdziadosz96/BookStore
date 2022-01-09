@@ -16,11 +16,9 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @AllArgsConstructor
 @Builder
 @Entity
-@Generated
 public class Recipient extends BaseEntity {
     @Column(unique = true)
     private String email;
-
     private String name;
     private String phone;
     private String street;

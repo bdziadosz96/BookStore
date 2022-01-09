@@ -32,7 +32,6 @@ import static javax.persistence.EnumType.STRING;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "orders")
-@Generated
 @EntityListeners(AuditingEntityListener.class)
 public class Order extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
