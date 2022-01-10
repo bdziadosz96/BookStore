@@ -3,8 +3,11 @@ package pl.bookstore.ebook.order.app.port;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Singular;
 import lombok.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
 import pl.bookstore.ebook.commons.Either;
 import pl.bookstore.ebook.order.domain.Delivery;
 import pl.bookstore.ebook.order.domain.OrderStatus;
@@ -33,7 +36,7 @@ public interface ManageOrderUseCase {
     class UpdateOrderStatusCommand {
         Long orderId;
         OrderStatus status;
-        String email;
+        User user;
     }
 
     @Value
@@ -56,17 +59,26 @@ public interface ManageOrderUseCase {
         }
     }
 
-    class UpdateStatusResponse extends Either<String, OrderStatus> {
-        UpdateStatusResponse(final boolean success, final String left, final OrderStatus right) {
+    class UpdateStatusResponse extends Either<Error, OrderStatus> {
+        UpdateStatusResponse(final boolean success, final Error left, final OrderStatus right) {
             super(success, left, right);
         }
 
-        public static UpdateStatusResponse success(final OrderStatus status) {
+        public static UpdateStatusResponse success(OrderStatus status) {
             return new UpdateStatusResponse(true, null, status);
         }
 
-        public static UpdateStatusResponse failure(final String error) {
+        public static UpdateStatusResponse failure(Error error) {
             return new UpdateStatusResponse(false, error, null);
         }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    enum Error {
+        NOT_FOUND(HttpStatus.NOT_FOUND),
+        FORBIDDEN(HttpStatus.FORBIDDEN);
+
+        private final HttpStatus status;
     }
 }

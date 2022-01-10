@@ -2,9 +2,12 @@ package pl.bookstore.ebook.order.app.port;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import pl.bookstore.ebook.clock.Clock;
 import pl.bookstore.ebook.order.app.port.ManageOrderUseCase.UpdateOrderStatusCommand;
@@ -20,6 +23,7 @@ class AbandonedOrdersJob {
     private ManageOrderUseCase orderUseCase;
     private OrderProperties properties;
     private Clock clock;
+    private User systemUser;
 
     @Scheduled(cron = "${app.time.cron-delay-job}")
     public void run() {
@@ -33,10 +37,9 @@ class AbandonedOrdersJob {
                         + orders.size());
         orders.forEach(
                 order -> {
-                    String admin = "admin@admin.pl";
                     UpdateOrderStatusCommand command =
                             new UpdateOrderStatusCommand(
-                                    order.getId(), OrderStatus.ABANDONED, admin);
+                                    order.getId(), OrderStatus.ABANDONED, systemUser);
                     orderUseCase.updateOrderStatus(command);
                 });
     }

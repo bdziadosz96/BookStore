@@ -1,6 +1,7 @@
 package pl.bookstore.ebook.order.app;
 
 import java.math.BigDecimal;
+import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.db.BookJpaRepository;
 import pl.bookstore.ebook.catalog.domain.Book;
@@ -195,7 +198,11 @@ class ManageOrderServiceTest {
 
     @NotNull
     private UpdateOrderStatusCommand updateStatusTo(Long orderId, OrderStatus orderStatus, String email) {
-        return new UpdateOrderStatusCommand(orderId, orderStatus, email);
+        return new UpdateOrderStatusCommand(orderId, orderStatus, adminUser());
+    }
+
+    private User adminUser() {
+        return new User("admin", "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
     }
 
 
@@ -242,12 +249,16 @@ class ManageOrderServiceTest {
         assertEquals(40L, availableCopiesOf(effectiveJava));
 
         //when
-        UpdateOrderStatusCommand command = new UpdateOrderStatusCommand(orderId, OrderStatus.CANCELED, "example@ex.com");
+        UpdateOrderStatusCommand command = new UpdateOrderStatusCommand(orderId, OrderStatus.CANCELED, user("example@ex.com"));
         manageOrderService.updateOrderStatus(command);
 
         //then
         assertEquals(40L, availableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.NEW, queryOrderService.findById(orderId).get().getStatus());
+    }
+
+    private User user(String email) {
+        return new User(email,"pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
     }
 
     @Test

@@ -15,6 +15,8 @@ import pl.bookstore.ebook.order.db.OrderJpaRepository;
 import pl.bookstore.ebook.order.domain.Order;
 import pl.bookstore.ebook.order.domain.OrderItem;
 import pl.bookstore.ebook.order.domain.Recipient;
+import pl.bookstore.ebook.order.domain.UpdateStatusResult;
+import pl.bookstore.ebook.security.UserSecurity;
 
 import static pl.bookstore.ebook.order.app.port.ManageOrderUseCase.PlaceOrderResponse.success;
 
@@ -26,15 +28,12 @@ public class ManageOrderService implements ManageOrderUseCase {
     private final OrderJpaRepository orderRepository;
     private final BookJpaRepository bookRepository;
     private final RecipientJpaRepository recipientRepository;
+    private final UserSecurity userSecurity;
 
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
         Set<OrderItem> items =
-                command
-                        .getItems()
-                        .stream()
-                        .map(this::toOrderItem)
-                        .collect(Collectors.toSet());
+                command.getItems().stream().map(this::toOrderItem).collect(Collectors.toSet());
         Order order =
                 Order.builder()
                         .items(items)
@@ -84,32 +83,30 @@ public class ManageOrderService implements ManageOrderUseCase {
     }
 
     @Override
+    @Transactional
     public UpdateStatusResponse updateOrderStatus(UpdateOrderStatusCommand command) {
         return orderRepository
                 .findById(command.getOrderId())
                 .map(
                         order -> {
-                            if (!hasAccess(command, order)) {
-                                return UpdateStatusResponse.failure("Unauthorized");
+                            if (userSecurity.isOwnerOrAdmin(
+                                    order.getRecipient().getEmail(), command.getUser())) {
+                                UpdateStatusResult updateStatusResult =
+                                        order.updateStatus(command.getStatus());
+                                if (updateStatusResult.isRevoked()) {
+                                    bookRepository.saveAll(revokeBooks(order.getItems()));
+                                }
+                                ManageOrderService.log.info(
+                                        "Updated order status "
+                                                + command.getStatus()
+                                                + " with id: "
+                                                + order.getId());
+                                orderRepository.save(order);
+                                return UpdateStatusResponse.success(order.getStatus());
                             }
-                            var updateStatusResult = order.updateStatus(command.getStatus());
-                            if (updateStatusResult.isRevoked()) {
-                                bookRepository.saveAll(revokeBooks(order.getItems()));
-                            }
-                            ManageOrderService.log.info(
-                                    "Updated order status "
-                                            + command.getStatus()
-                                            + " with id: "
-                                            + order.getId());
-                            orderRepository.save(order);
-                            return UpdateStatusResponse.success(order.getStatus());
+                            return UpdateStatusResponse.failure(Error.FORBIDDEN);
                         })
-                .orElse(UpdateStatusResponse.failure("Order not found"));
-    }
-
-    private boolean hasAccess(UpdateOrderStatusCommand command, Order order) {
-        return command.getEmail().equalsIgnoreCase(order.getRecipient().getEmail())
-                || command.getEmail().equalsIgnoreCase("admin@admin.pl");
+                .orElse(UpdateStatusResponse.failure(Error.NOT_FOUND));
     }
 
     private Set<Book> reduceBooks(Set<OrderItem> items) {
