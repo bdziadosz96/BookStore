@@ -35,3 +35,25 @@ Content-Type: application/json
     "email": "johndoe@example.org"
   }
 }
+
+###
+POST http://localhost:8081/users
+Content-Type: application/json
+
+{
+  "username": "example@example.pl",
+  "password": "passd"
+}
+
+###
+// @no-redirect
+POST http://localhost:8081/login
+Content-Type: application/json
+
+{
+  "username": "example@example.pl",
+  "password": "passd"
+}
+
+###
+GET http://localhost:8081/orders/107

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -50,14 +51,14 @@ class OrderController {
 
     @GetMapping("/{id}")
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
-    public ResponseEntity<?> getById(@PathVariable final Long id, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> getById(@PathVariable final Long id, @AuthenticationPrincipal UserDetails user) {
         return queryOrder
                 .findById(id)
                 .map(order -> authorize(user,order))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    private ResponseEntity<OrderDto> authorize(User user, OrderDto orderDto) {
+    private ResponseEntity<OrderDto> authorize(UserDetails user, OrderDto orderDto) {
         if (userSecurity.isOwnerOrAdmin(orderDto.getRecipient().getEmail(), user)) {
             return ResponseEntity.ok(orderDto);
         }
@@ -77,7 +78,7 @@ class OrderController {
     @PatchMapping("/{id}/status")
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     public ResponseEntity<?> updateOrderStatus(
-            @PathVariable final Long id, @RequestBody final Map<String, String> body, @AuthenticationPrincipal User user) {
+            @PathVariable final Long id, @RequestBody final Map<String, String> body, @AuthenticationPrincipal UserDetails user) {
         String status = body.get("status");
         final OrderStatus orderStatus =
                 OrderStatus.checkString(status)

@@ -109,7 +109,7 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
         Recipient recipient =
                 Recipient.builder()
                         .city("Warszawa")
-                        .email("user@example.com")
+                        .email("example@example.pl")
                         .name("Bartek Dziadosz")
                         .phone("700-600-500")
                         .street("Kwiatowa 18b/10")

@@ -11,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -22,24 +23,23 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @Table(name = "users")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public
-class UserEntity extends BaseEntity {
+@NoArgsConstructor
+public class UserEntity extends BaseEntity {
     private String username;
     private String password;
 
-    @CollectionTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id")
-    )
+    @CollectionTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role", unique = true)
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+    @CreatedDate private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+    @LastModifiedDate private LocalDateTime updatedAt;
 
-
+    public UserEntity(String username, String password) {
+        this.username = username;
+        this.password = password;
+        this.roles = Set.of("ROLE_USER");
+    }
 }

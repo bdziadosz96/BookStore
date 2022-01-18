@@ -8,6 +8,7 @@ import lombok.Singular;
 import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import pl.bookstore.ebook.commons.Either;
 import pl.bookstore.ebook.order.domain.Delivery;
 import pl.bookstore.ebook.order.domain.OrderStatus;
@@ -36,7 +37,7 @@ public interface ManageOrderUseCase {
     class UpdateOrderStatusCommand {
         Long orderId;
         OrderStatus status;
-        User user;
+        UserDetails user;
     }
 
     @Value

@@ -41,7 +41,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .mvcMatchers(HttpMethod.GET, "/catalog/**", "/uploads/**", "/authors/**")
                 .permitAll()
-                .mvcMatchers(HttpMethod.POST, "/orders", "/login")
+                .mvcMatchers(HttpMethod.POST, "/orders", "/login", "/users")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
