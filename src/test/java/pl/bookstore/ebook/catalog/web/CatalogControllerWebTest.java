@@ -7,10 +7,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.domain.Book;
+import pl.bookstore.ebook.user.db.UserEntityRepository;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -19,6 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CatalogController.class)
 public class CatalogControllerWebTest {
+
+    @MockBean
+    UserEntityRepository repository;
 
     @MockBean
     CatalogUseCase catalogUseCase;
