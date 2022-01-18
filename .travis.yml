@@ -1,1 +1,12 @@
-language: java
+before_install:
+  - chmod +x gradlew
+
+env:
+  global:
+    - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+script:
+  - jdk_switcher use openjdk17
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+  - chmod +x $TRAVIS_BUILD_DIR/install-jdk.sh
+  - export JAVA_HOME=$HOME/openjdk17
+  - $TRAVIS_BUILD_DIR/install-jdk.sh -F 17 --target $JAVA_HOME
