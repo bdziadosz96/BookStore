@@ -34,7 +34,5 @@ out/
 
 ### VS Code ###
 .vscode/
-!/shortcut.txt
 /src/main/resources/beans.xml
 /src/main/resources/context.xml
-/.jpb/
