@@ -29,6 +29,8 @@ dependencies {
     implementation 'org.hibernate.validator:hibernate-validator:6.0.18.Final'
     implementation 'javax.validation:validation-api:2.0.1.Final'
     testImplementation 'com.h2database:h2:1.4.200'
+    implementation 'org.flywaydb:flyway-core:6.5.7'
+
 
 
     //LOMBOK
