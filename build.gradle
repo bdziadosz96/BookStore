@@ -72,6 +72,14 @@ bootJar {
     }
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'pl.bookstore.ebook.EbookApplication'
+        )
+    }
+}
+
 springBoot {
     mainClass = 'pl.bookstore.ebook.EbookApplication'
 }
