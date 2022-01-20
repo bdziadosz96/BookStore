@@ -36,3 +36,5 @@ out/
 .vscode/
 /src/main/resources/beans.xml
 /src/main/resources/context.xml
+/shortcut.txt
+/.jpb/jpb-settings.xml

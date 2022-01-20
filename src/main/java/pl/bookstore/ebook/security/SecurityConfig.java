@@ -40,10 +40,9 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeRequests()
-                .mvcMatchers(HttpMethod.GET, "/catalog/**", "/uploads/**", "/authors/**")
-                .permitAll()
-                .mvcMatchers(HttpMethod.POST, "/orders", "/login", "/users")
-                .permitAll()
+                .mvcMatchers(HttpMethod.GET, "/catalog/**", "/uploads/**", "/authors/**").permitAll()
+                .mvcMatchers(HttpMethod.POST, "/orders", "/login", "/users").permitAll()
+                .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated()
                 .and()

@@ -56,11 +56,6 @@ test {
     }
 }
 
-spotless {
-    java {
-        target 'src/main/java/pl/bookstore/ebook/**/*.java'
-    }
-}
 
 jacocoTestReport {
     dependsOn(test)
