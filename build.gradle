@@ -79,7 +79,3 @@ jar {
         )
     }
 }
-
-springBoot {
-    mainClass = 'pl.bookstore.ebook.EbookApplication'
-}
