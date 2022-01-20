@@ -65,3 +65,11 @@ jacocoTestReport {
         html.enabled(true)
     }
 }
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'java.pl.bookstore.ebook.EbookApplication'
+        )
+    }
+}
