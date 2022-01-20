@@ -66,10 +66,12 @@ jacocoTestReport {
     }
 }
 
-jar {
+bootJar {
     manifest {
-        attributes(
-                'Main-Class': 'java.pl.bookstore.ebook.EbookApplication'
-        )
+        attributes 'Start-Class': 'pl.bookstore.ebook.EbookApplication'
     }
+}
+
+springBoot {
+    mainClass = 'pl.bookstore.ebook.EbookApplication'
 }
