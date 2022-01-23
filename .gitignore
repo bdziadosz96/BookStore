@@ -49,3 +49,5 @@ out/
 /.gradle/buildOutputCleanup/buildOutputCleanup.lock
 /.gradle/buildOutputCleanup/outputFiles.bin
 /.gradle/file-system.probe
+/.gradle/
+/.gradle/7.3.3/
