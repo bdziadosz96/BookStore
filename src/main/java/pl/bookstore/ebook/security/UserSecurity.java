@@ -1,6 +1,5 @@
 package pl.bookstore.ebook.security;
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +10,7 @@ public class UserSecurity {
     }
 
     private boolean isAdmin(UserDetails user) {
-        return user.getAuthorities()
-                .stream()
+        return user.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_ADMIN"));
     }
 

@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,10 +50,11 @@ class OrderController {
 
     @GetMapping("/{id}")
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
-    public ResponseEntity<?> getById(@PathVariable final Long id, @AuthenticationPrincipal UserDetails user) {
+    public ResponseEntity<?> getById(
+            @PathVariable final Long id, @AuthenticationPrincipal UserDetails user) {
         return queryOrder
                 .findById(id)
-                .map(order -> authorize(user,order))
+                .map(order -> authorize(user, order))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -78,7 +78,9 @@ class OrderController {
     @PatchMapping("/{id}/status")
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     public ResponseEntity<?> updateOrderStatus(
-            @PathVariable final Long id, @RequestBody final Map<String, String> body, @AuthenticationPrincipal UserDetails user) {
+            @PathVariable final Long id,
+            @RequestBody final Map<String, String> body,
+            @AuthenticationPrincipal UserDetails user) {
         String status = body.get("status");
         final OrderStatus orderStatus =
                 OrderStatus.checkString(status)
@@ -86,8 +88,7 @@ class OrderController {
                                 () ->
                                         new ResponseStatusException(
                                                 BAD_REQUEST, "Unkown status: " + status));
-        UpdateOrderStatusCommand command =
-                new UpdateOrderStatusCommand(id, orderStatus, user);
+        UpdateOrderStatusCommand command = new UpdateOrderStatusCommand(id, orderStatus, user);
         return manageOrder
                 .updateOrderStatus(command)
                 .handle(

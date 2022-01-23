@@ -28,5 +28,4 @@ public class PriceService {
                 .map(strategy -> strategy.calculate(order))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
 }

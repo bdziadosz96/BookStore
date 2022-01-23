@@ -16,7 +16,8 @@ class BookUserDetailsService implements UserDetailsService {
         if (config.getUsername().equalsIgnoreCase(username)) {
             return config.adminUser();
         }
-        return repository.findByUsernameIgnoreCase(username)
+        return repository
+                .findByUsernameIgnoreCase(username)
                 .map(UserEntityDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }

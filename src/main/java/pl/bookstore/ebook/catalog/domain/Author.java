@@ -8,7 +8,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.ManyToMany;
-import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,8 +24,7 @@ import pl.bookstore.ebook.jpa.BaseEntity;
 @EntityListeners(AuditingEntityListener.class)
 public class Author extends BaseEntity {
     private String name;
-    @CreatedDate
-    private LocalDateTime createdAt;
+    @CreatedDate private LocalDateTime createdAt;
 
     @JsonIgnoreProperties("authors")
     @ManyToMany(
@@ -37,7 +35,6 @@ public class Author extends BaseEntity {
     public Author(String firstname) {
         this.name = firstname;
     }
-
 
     public void addBook(final Book book) {
         books.add(book);

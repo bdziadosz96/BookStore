@@ -16,7 +16,6 @@ import pl.bookstore.ebook.catalog.app.port.CatalogInitializerUseCase;
 class AdminStartupController {
     CatalogInitializerUseCase initializer;
 
-
     @PostMapping("/initialize")
     public void initialize() {
         initializer.load();

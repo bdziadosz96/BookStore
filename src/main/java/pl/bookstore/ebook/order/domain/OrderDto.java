@@ -3,7 +3,6 @@ package pl.bookstore.ebook.order.domain;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
-import lombok.Generated;
 import lombok.Value;
 import pl.bookstore.ebook.order.price.OrderPrice;
 

@@ -15,11 +15,9 @@ import lombok.Setter;
 @EqualsAndHashCode(of = "uuid")
 public abstract class BaseEntity {
 
-    @Id @GeneratedValue()
-    private Long id;
+    @Id @GeneratedValue() private Long id;
 
     private String uuid = UUID.randomUUID().toString();
 
-    @Version
-    private long version;
+    @Version private long version;
 }

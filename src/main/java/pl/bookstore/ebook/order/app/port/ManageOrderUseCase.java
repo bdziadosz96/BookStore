@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Singular;
 import lombok.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.bookstore.ebook.commons.Either;
 import pl.bookstore.ebook.order.domain.Delivery;
@@ -27,8 +26,7 @@ public interface ManageOrderUseCase {
     class PlaceOrderCommand {
         @Singular List<OrderItemCommand> items;
         Recipient recipient;
-        @Builder.Default
-        Delivery delivery = Delivery.COURIER;
+        @Builder.Default Delivery delivery = Delivery.COURIER;
     }
 
     @Value

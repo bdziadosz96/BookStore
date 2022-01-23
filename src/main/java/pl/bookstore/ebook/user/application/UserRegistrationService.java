@@ -18,7 +18,7 @@ class UserRegistrationService implements UserRegistrationUseCase {
     @Transactional
     public RegisterResponse register(String username, String password) {
         if (repository.findByUsernameIgnoreCase(username).isPresent()) {
-            return RegisterResponse.failure(String.format("%s already exist!",username));
+            return RegisterResponse.failure(String.format("%s already exist!", username));
         }
         UserEntity entity = new UserEntity(username, passwordEncoder.encode(password));
         repository.save(entity);

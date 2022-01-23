@@ -27,14 +27,13 @@ public class UserController {
                 .register(command.username, command.password)
                 .handle(
                         cmd -> ResponseEntity.accepted().build(),
-                        failCmd -> ResponseEntity.badRequest().body(failCmd)
-                );
+                        failCmd -> ResponseEntity.badRequest().body(failCmd));
     }
 
     @Data
     static class RegisterCommand {
-        @Email
-        String username;
+        @Email String username;
+
         @Size(min = 3, max = 20)
         String password;
     }

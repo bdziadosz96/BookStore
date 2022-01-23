@@ -8,7 +8,7 @@ class DeliveryDiscountStrategy implements DiscountStrategy {
 
     @Override
     public BigDecimal calculate(Order order) {
-        if(order.getItemsPrice().compareTo(THRESHOLD) >= 0) {
+        if (order.getItemsPrice().compareTo(THRESHOLD) >= 0) {
             return order.getDeliveryPrice();
         }
         return BigDecimal.ZERO;

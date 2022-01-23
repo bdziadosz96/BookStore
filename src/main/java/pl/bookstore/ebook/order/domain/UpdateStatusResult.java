@@ -1,6 +1,5 @@
 package pl.bookstore.ebook.order.domain;
 
-import lombok.Generated;
 import lombok.Value;
 
 @Value
