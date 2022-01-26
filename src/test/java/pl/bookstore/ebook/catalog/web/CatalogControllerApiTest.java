@@ -73,17 +73,18 @@ class CatalogControllerApiTest {
         Book javaPuzzlers = givenJavaPuzzlers();
         Mockito.when(catalogUseCase.findAll()).thenReturn(List.of(effectiveJava,javaPuzzlers));
         Mockito.when(catalogUseCase.findByAuthor(author.getName())).thenReturn(List.of(effectiveJava));
-        ParameterizedTypeReference<List<Book>> parameter = new ParameterizedTypeReference<>() {};
+        ParameterizedTypeReference<List<RestBook>> parameter = new ParameterizedTypeReference<>() {};
 
         //when
         RequestEntity<Void> request = RequestEntity.get(URI.create("http://localhost:" + portNumber + "/catalog?author=Testowy")).build();
-        ResponseEntity<List<Book>> response = restTemplate.exchange(request, parameter);
+        ResponseEntity<List<RestBook>> response = restTemplate.exchange(request, parameter);
 
         //then
         assertNotEquals(2, response.getBody().size());
         assertNotEquals(0, response.getBody().size());
         assertEquals(1, response.getBody().size());
-        assertTrue(response.getBody().contains(effectiveJava));
+        assertTrue(response.getBody().toString().contains("title=Effective Java"));
+        assertTrue(response.getStatusCode().is2xxSuccessful());
     }
 
     private Book givenEffectiveJava() {

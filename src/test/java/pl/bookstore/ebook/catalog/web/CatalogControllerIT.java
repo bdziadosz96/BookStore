@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
 import pl.bookstore.ebook.catalog.db.AuthorJpaRepository;
@@ -40,7 +41,7 @@ class CatalogControllerIT {
 
 
         //when
-        List<Book> all = catalogController.getAll(Optional.empty(), Optional.empty());
+        List<RestBook> all = catalogController.getAll(mockRequest(), Optional.empty(), Optional.empty());
 
         //then
 
@@ -55,7 +56,7 @@ class CatalogControllerIT {
 
 
         //when
-        List<Book> bloch = catalogController.getAll(Optional.of("Effective Java"), Optional.empty());
+        List<RestBook> bloch = catalogController.getAll(mockRequest(), Optional.of("Effective Java"), Optional.empty());
 
         //then
 
@@ -71,7 +72,7 @@ class CatalogControllerIT {
 
 
         //when
-        List<Book> connor = catalogController.getAll(Optional.empty(), Optional.of("Steven Connor"));
+        List<RestBook> connor = catalogController.getAll(mockRequest(), Optional.empty(), Optional.of("Steven Connor"));
 
         //then
 
@@ -100,5 +101,9 @@ class CatalogControllerIT {
                 new BigDecimal("19.99"),
                 50L
         ));
+    }
+
+    private MockHttpServletRequest mockRequest() {
+        return new MockHttpServletRequest();
     }
 }

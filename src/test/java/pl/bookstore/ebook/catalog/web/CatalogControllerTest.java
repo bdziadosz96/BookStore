@@ -3,11 +3,13 @@ package pl.bookstore.ebook.catalog.web;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pl.bookstore.ebook.catalog.app.port.CatalogUseCase;
@@ -38,7 +40,7 @@ class CatalogControllerTest {
         Mockito.when(catalogUseCase.findAll()).thenReturn(List.of(effectiveJava, javaPuzzlers));
 
         //when
-        List<Book> all = catalogController.getAll(Optional.empty(), Optional.empty());
+        List<RestBook> all = catalogController.getAll(mockRequest(),Optional.empty(), Optional.empty());
 
         //then
         assertEquals(2, all.size());
@@ -54,12 +56,16 @@ class CatalogControllerTest {
 
 
         //when
-        List<Book> bookList = catalogController.getAll(Optional.of("Effective Java"), Optional.empty());
+        List<RestBook> bookList = catalogController.getAll(mockRequest(), Optional.of("Effective Java"), Optional.empty());
 
         //then
 
         assertEquals(1, bookList.size());
         assertEquals("Effective Java", bookList.get(0).getTitle());
+    }
+
+    private MockHttpServletRequest mockRequest() {
+        return new MockHttpServletRequest();
     }
 
     @Test
@@ -71,7 +77,7 @@ class CatalogControllerTest {
         Mockito.when(catalogUseCase.findByAuthor(author.getName())).thenReturn(List.of(effectiveJava));
 
         //when
-        List<Book> bookList = catalogController.getAll(Optional.empty(), Optional.of("Shannon Brian"));
+        List<RestBook> bookList = catalogController.getAll(mockRequest(),Optional.empty(), Optional.of("Shannon Brian"));
 
         //then
         assertEquals(1, bookList.size());
