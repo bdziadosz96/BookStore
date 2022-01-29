@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import pl.bookstore.ebook.catalog.db.BookJpaRepository;
 import pl.bookstore.ebook.catalog.db.RecipientJpaRepository;
 import pl.bookstore.ebook.catalog.domain.Book;
